@@ -2,9 +2,9 @@
 """Python EpanetToolkit interface
 
 not yet implemented:
-- ENgetqualtype
-- ENsetqualtype
-- ENstepQ
+ ENgetqualtype
+ ENsetqualtype
+ ENstepQ
 
 - ENresetreport
 - ENsetreport
