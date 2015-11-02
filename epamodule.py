@@ -1,21 +1,7 @@
 #!/usr/bin/env python
 """Python EpanetToolkit interface
 
-not yet implemented:
- ENgetqualtype
- ENsetqualtype
- ENstepQ
-
-- ENresetreport
-- ENsetreport
-- ENsetstatusreport
-- ENwriteline
-
-- ENsavehydfile
-- ENusehydfile
-
-added functions:
-+ ENsimtime"""
+added function ENsimtime"""
 
 import ctypes
 import platform
@@ -24,11 +10,22 @@ import datetime
 _plat= platform.system()
 if _plat=='Linux':
   _lib = ctypes.CDLL("libepanet.so.2")
-elif _plat=='Windows': 
-  _lib = ctypes.windll.epanet2
+elif _plat=='Windows':
+  try:
+    # if epanet2.dll compiled with __cdecl (as in OpenWaterAnalytics)
+    _lib = ctypes.CDLL("epanet2.dll")
+    _lib.ENgetversion(ctypes.byref(ctypes.c_int()))
+  except ValueError:
+     # if epanet2.dll compiled with __stdcall (as in EPA original DLL)
+     try:
+       _lib = ctypes.windll.epanet2
+       _lib.ENgetversion(ctypes.byref(ctypes.c_int()))
+     except ValueError:
+       raise Exception("epanet2.dll not suitable")
+
 else:
   Exception('Platform '+ _plat +' unsupported (not yet)')
-  
+
 
 _current_simulation_time=  ctypes.c_long()
 
@@ -39,7 +36,7 @@ _err_max_char= 80
 
 
 
-def ENepanet(nomeinp, nomerpt='report.txt', nomebin='', vfunc=None):
+def ENepanet(nomeinp, nomerpt='', nomebin='', vfunc=None):
     """Runs a complete EPANET simulation.
 
     Arguments:
@@ -47,11 +44,16 @@ def ENepanet(nomeinp, nomerpt='report.txt', nomebin='', vfunc=None):
     nomerpt: name of an output report file
     nomebin: name of an optional binary output file
     vfunc  : pointer to a user-supplied function which accepts a character string as its argument."""  
-    ierr= _lib.ENepanet(ctypes.c_char_p(nomeinp), ctypes.c_char_p(nomerpt), ctypes.c_char_p(nomebin), vfunc)
+    if vfunc is not None:
+        CFUNC = ctypes.CFUNCTYPE(ctypes.c_void_p, ctypes.c_char_p)
+        callback= CFUNC(vfunc)
+    else:
+        callback= None
+    ierr= _lib.ENepanet(ctypes.c_char_p(nomeinp), ctypes.c_char_p(nomerpt), ctypes.c_char_p(nomebin), callback)
     if ierr!=0: raise ENtoolkitError(ierr)
 
 
-def ENopen(nomeinp, nomerpt='report.txt', nomebin=''):
+def ENopen(nomeinp, nomerpt='', nomebin=''):
     """Opens the Toolkit to analyze a particular distribution system
 
     Arguments:
@@ -300,6 +302,24 @@ def ENgettimeparam(paramcode):
     ierr= _lib.ENgettimeparam(paramcode, ctypes.byref(j))
     if ierr!=0: raise ENtoolkitError(ierr)
     return j.value
+    
+def  ENgetqualtype(qualcode):
+    """Retrieves the type of water quality analysis called for
+    returns  qualcode: Water quality analysis codes are as follows:
+                       EN_NONE	0 No quality analysis
+                       EN_CHEM	1 Chemical analysis
+                       EN_AGE 	2 Water age analysis
+                       EN_TRACE	3 Source tracing
+             tracenode:	index of node traced in a source tracing
+	                analysis  (value will be 0 when qualcode
+			is not EN_TRACE)"""
+    qualcode= ctypes.c_int()
+    tracenode= ctypes.c_int()
+    ierr= _lib.ENgetqualtype(ctypes.byref(qualcode),
+                             ctypes.byref(tracenode))
+    if ierr!=0: raise ENtoolkitError(ierr)
+    return qualcode.value, tracenode.value
+
 
 
 #-------Retrieving other network information--------
@@ -308,7 +328,7 @@ def ENgetcontrol(cindex, ctype, lindex, setting, nindex, level ):
     Arguments:
        cindex:  control statement index
        ctype:   control type code EN_LOWLEVEL   (Low Level Control)
-                                  EN_HILEVEL    (High Level Control)  
+                                  EN_HILEVEL    (High Level Control)
                                   EN_TIMER      (Timer Control)       
                                   EN_TIMEOFDAY  (Time-of-Day Control)
        lindex:  index of link being controlled
@@ -415,7 +435,9 @@ def ENsetlinkvalue(index, paramcode, value):
                    a simulation is being run (within the ENrunH - ENnextH loop).
 
     value:parameter value"""
-    ierr= _lib.ENsetlinkvalue(ctypes.c_int(index), ctypes.c_int(paramcode), ctypes.c_float(value))
+    ierr= _lib.ENsetlinkvalue(ctypes.c_int(index), 
+                              ctypes.c_int(paramcode), 
+			      ctypes.c_float(value))
     if ierr!=0: raise ENtoolkitError(ierr)
 
 
@@ -449,13 +471,25 @@ def ENsetpatternvalue( index, period, value):
        period: period within time pattern
        value:  multiplier factor for the period"""
     #int ENsetpatternvalue( int index, int period, float value )
-    ierr= _lib.ENsetpatternvalue( ctypes.c_int(index), ctypes.c_int(period), ctypes.c_float(value) )
+    ierr= _lib.ENsetpatternvalue( ctypes.c_int(index), 
+                                  ctypes.c_int(period), 
+				  ctypes.c_float(value) )
     if ierr!=0: raise ENtoolkitError(ierr)
  
  
 
- 
-
+def ENsetqualtype(qualcode, chemname, chemunits, tracenode):
+    """Sets the type of water quality analysis called for.
+    Arguments:
+         qualcode:	water quality analysis code
+         chemname:	name of the chemical being analyzed
+         chemunits:	units that the chemical is measured in
+         tracenode:	ID of node traced in a source tracing analysis """
+    ierr= _lib.ENsetqualtype( ctypes.c_int(qualcode),
+                              ctypes.c_char_p(chemname),
+			      ctypes.c_char_p(chemunits),
+                              ctypes.c_char_p(tracenode))
+    if ierr!=0: raise ENtoolkitError(ierr)
 
 
 def  ENsettimeparam(paramcode, timevalue):
@@ -496,14 +530,23 @@ def ENsetoption( optioncode, value):
     if ierr!=0: raise ENtoolkitError(ierr)
 
 
+#----- Saving and using hydraulic analysis results files -------
+def ENsavehydfile(fname):
+    """Saves the current contents of the binary hydraulics file to a file."""
+    ierr= _lib.ENsavehydfile(ctypes.c_char_p(fname))
+    if ierr!=0: raise ENtoolkitError(ierr)
 
+def  ENusehydfile(fname):
+    """Uses the contents of the specified file as the current binary hydraulics file"""
+    ierr= _lib.ENusehydfile(ctypes.c_char_p(fname))
+    if ierr!=0: raise ENtoolkitError(ierr)
 
 
 
 #----------Running a hydraulic analysis --------------------------
 def ENsolveH():
-    """Runs a complete hydraulic simulation with results for all time periods written to the
-    binary Hydraulics file."""
+    """Runs a complete hydraulic simulation with results 
+    for all time periods written to the binary Hydraulics file."""
     ierr= _lib.ENsolveH()
     if ierr!=0: raise ENtoolkitError(ierr)
 
@@ -514,7 +557,8 @@ def ENopenH():
 
 
 def ENinitH(flag=None):
-    """Initializes storage tank levels, link status and settings, and the simulation clock time prior
+    """Initializes storage tank levels, link status and settings, 
+    and the simulation clock time prior
 to running a hydraulic analysis.
 
     flag  EN_NOSAVE [+EN_SAVE] [+EN_INITFLOW] """
@@ -523,7 +567,8 @@ to running a hydraulic analysis.
 
 
 def ENrunH():
-    """Runs a single period hydraulic analysis, retrieving the current simulation clock time t""" 
+    """Runs a single period hydraulic analysis, 
+    retrieving the current simulation clock time t"""
     ierr= _lib.ENrunH(ctypes.byref(_current_simulation_time))
     if ierr>=100: 
       raise ENtoolkitError(ierr)
@@ -553,7 +598,8 @@ def ENcloseH():
 
 #----------Running a quality analysis --------------------------
 def ENsolveQ():
-    """Runs a complete water quality simulation with results at uniform reporting intervals written to EPANET's binary Output file."""
+    """Runs a complete water quality simulation with results 
+    at uniform reporting intervals written to EPANET's binary Output file."""
     ierr= _lib.ENsolveQ()
     if ierr!=0: raise ENtoolkitError(ierr)
 
@@ -564,14 +610,17 @@ def ENopenQ():
 
 
 def ENinitQ(flag=None):
-    """Initializes water quality and the simulation clock time prior to running a water quality analysis.
+    """Initializes water quality and the simulation clock 
+    time prior to running a water quality analysis.
 
     flag  EN_NOSAVE | EN_SAVE """
     ierr= _lib.ENinitQ(flag)
     if ierr!=0: raise ENtoolkitError(ierr)
 
 def ENrunQ():
-    """Makes available the hydraulic and water quality results that occur at the start of the next time period of a water quality analysis, where the start of the period is returned in t."""
+    """Makes available the hydraulic and water quality results
+    that occur at the start of the next time period of a water quality analysis, 
+    where the start of the period is returned in t."""
     ierr= _lib.ENrunQ(ctypes.byref(_current_simulation_time))
     if ierr>=100: 
       raise ENtoolkitError(ierr)
@@ -579,14 +628,25 @@ def ENrunQ():
       return ENgeterror(ierr)
 
 def ENnextQ():
-    """Advances the water quality simulation to the start of the next hydraulic time period."""
+    """Advances the water quality simulation 
+    to the start of the next hydraulic time period."""
     _deltat= ctypes.c_long()
     ierr= _lib.ENnextQ(ctypes.byref(_deltat))
     if ierr!=0: raise ENtoolkitError(ierr)
     return _deltat.value
+    
+    
+def ENstepQ():
+    """Advances the water quality simulation one water quality time step. 
+    The time remaining in the overall simulation is returned in tleft."""
+    tleft= ctypes.c_long()
+    ierr= _lib.ENnextQ(ctypes.byref(tleft))
+    if ierr!=0: raise ENtoolkitError(ierr)
+    return tleft.value
 
 def ENcloseQ():
-    """Closes the water quality analysis system, freeing all allocated memory."""
+    """Closes the water quality analysis system, 
+    freeing all allocated memory."""
     ierr= _lib.ENcloseQ()
     if ierr!=0: raise ENtoolkitError(ierr)
 #--------------------------------------------
@@ -596,29 +656,64 @@ def ENcloseQ():
 
 
 def ENsaveH():
-    """Transfers results of a hydraulic simulation from the binary Hydraulics file to the binary
-Output file, where results are only reported at uniform reporting intervals."""
+    """Transfers results of a hydraulic simulation 
+    from the binary Hydraulics file to the binary
+    Output file, where results are only reported at 
+    uniform reporting intervals."""
     ierr= _lib.ENsaveH()
     if ierr!=0: raise ENtoolkitError(ierr)
 
 
 def ENsaveinpfile(fname):
-    """Writes all current network input data to a file using the format of an EPANET input file."""
+    """Writes all current network input data to a file 
+    using the format of an EPANET input file."""
     ierr= _lib.ENsaveinpfile( ctypes.c_char_p(fname))
     if ierr!=0: raise ENtoolkitError(ierr)
 
 
 def ENreport():
-    """Writes a formatted text report on simulation results to the Report file."""
+    """Writes a formatted text report on simulation results 
+    to the Report file."""
     ierr= _lib.ENreport()
     if ierr!=0: raise ENtoolkitError(ierr)
 
+def ENresetreport():
+    """Clears any report formatting commands 
+    
+    that either appeared in the [REPORT] section of the 
+    EPANET Input file or were issued with the 
+    ENsetreport function"""
+    ierr= _lib.ENresetreport()
+    if ierr!=0: raise ENtoolkitError(ierr)
+    
+def ENsetreport(command):
+    """Issues a report formatting command. 
+    
+    Formatting commands are the same as used in the 
+    [REPORT] section of the EPANET Input file."""
+    ierr= _lib.ENsetreport(ctypes.c_char_p(command))
+    if ierr!=0: raise ENtoolkitError(ierr)
+
+def ENsetstatusreport(statuslevel):
+    """Sets the level of hydraulic status reporting. 
+    
+    statuslevel:  level of status reporting  
+                  0 - no status reporting
+                  1 - normal reporting
+                  2 - full status reporting"""
+    ierr= _lib.ENsetstatusreport(ctypes.c_int(statuslevel))
+    if ierr!=0: raise ENtoolkitError(ierr)
 
 def ENgeterror(errcode):
     """Retrieves the text of the message associated with a particular error or warning code."""
     errmsg= ctypes.create_string_buffer(_err_max_char)
     _lib.ENgeterror( errcode,ctypes.byref(errmsg), _err_max_char )
     return errmsg.value
+
+def ENwriteline(line ):
+    """Writes a line of text to the EPANET report file."""
+    ierr= _lib.ENwriteline(ctypes.c_char_p(line ))
+    if ierr!=0: raise ENtoolkitError(ierr)
 
 
 class ENtoolkitError(Exception):
@@ -630,6 +725,50 @@ class ENtoolkitError(Exception):
          self.message='ENtoolkit Undocumented Error '+str(ierr)+': look at text.h in epanet sources'
     def __str__(self):
       return self.message
+      
+      
+#------ functions added from OpenWaterAnalytics ----------------------------------
+# functions not present in original Epanet2 toolkit from US EPA
+# it may change in future versions
+#----------------------------------------------------------------------------------
+if hasattr(_lib,"ENgetcurve"):
+   def ENgetcurve(curveIndex):
+       curveid = ctypes.create_string_buffer(_max_label_len)
+       nValues = ctypes.c_int()
+       xValues= ctypes.POINTER(ctypes.c_float)()
+       yValues= ctypes.POINTER(ctypes.c_float)()
+       ierr= _lib.ENgetcurve(curveIndex,
+                             ctypes.byref(curveid),
+	     	             ctypes.byref(nValues),
+	     	             ctypes.byref(xValues),
+	     	             ctypes.byref(yValues)
+		             )
+       # strange behavior of ENgetcurve: it returns also curveID
+       # better split in two distinct functions ....
+       if ierr!=0: raise ENtoolkitError(ierr)
+       curve= []
+       for i in range(nValues.value):
+          curve.append( (xValues[i],yValues[i]) )
+       return curve
+
+   def ENgetcurveid(curveIndex):
+       curveid = ctypes.create_string_buffer(_max_label_len)
+       nValues = ctypes.c_int()
+       xValues= ctypes.POINTER(ctypes.c_float)()
+       yValues= ctypes.POINTER(ctypes.c_float)()
+       ierr= _lib.ENgetcurve(curveIndex,
+                             ctypes.byref(curveid),
+	     	             ctypes.byref(nValues),
+	     	             ctypes.byref(xValues),
+	     	             ctypes.byref(yValues)
+		             )
+       # strange behavior of ENgetcurve: it returns also curveID
+       # better split in two distinct functions ....
+       if ierr!=0: raise ENtoolkitError(ierr)
+       return curveid.value
+
+#-----end of functions added from OpenWaterAnalytics ----------------------------------
+
 
 EN_ELEVATION     = 0      # /* Node parameters */
 EN_BASEDEMAND    = 1
