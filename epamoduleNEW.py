@@ -7,13 +7,13 @@ import ctypes
 import platform
 import datetime
 
-_plat= platform.system()
+"""_plat= platform.system()
 if _plat=='Linux':
   _lib = ctypes.CDLL("libepanet.so.2")
 elif _plat=='Windows':
   try:
     # if epanet2.dll compiled with __cdecl (as in OpenWaterAnalytics)
-    _lib = ctypes.CDLL("epamodule\epanet2.dll")
+    _lib = ctypes.CDLL("epanet2.dll")
     _lib.ENgetversion(ctypes.byref(ctypes.c_int()))
   except ValueError:
      # if epanet2.dll compiled with __stdcall (as in EPA original DLL)
@@ -24,14 +24,17 @@ elif _plat=='Windows':
        raise Exception("epanet2.dll not suitable")
 
 else:
-  Exception('Platform '+ _plat +' unsupported (not yet)')
+  Exception('Platform '+ _plat +' unsupported (not yet)')"""
+import epanet2 as _lib  
 
 
 _current_simulation_time=  ctypes.c_long()
 
 _max_label_len= 32
+label = _lib.String(_max_label_len*"\0")
+
 _err_max_char= 80
-  
+errmsg= _lib.String(_err_max_char*"\0")
 
 
 
@@ -43,14 +46,15 @@ def ENepanet(nomeinp, nomerpt='', nomebin='', vfunc=None):
     nomeinp: name of the input file
     nomerpt: name of an output report file
     nomebin: name of an optional binary output file
-    vfunc  : pointer to a user-supplied function which accepts a character string as its argument."""  
+    vfunc  : pointer to a user-supplied function which accepts a character string as its argument."""
     if vfunc is not None:
         CFUNC = ctypes.CFUNCTYPE(ctypes.c_void_p, ctypes.c_char_p)
         callback= CFUNC(vfunc)
     else:
-        callback= None
-    ierr= _lib.ENepanet(ctypes.c_char_p(nomeinp), ctypes.c_char_p(nomerpt), ctypes.c_char_p(nomebin), callback)
-    print ierr
+        CFUNC = ctypes.CFUNCTYPE(ctypes.c_void_p, ctypes.c_char_p)
+        callback= CFUNC()
+    print type(callback)
+    ierr= _lib.ENepanet(nomeinp, nomerpt, nomebin, callback)
     if ierr!=0: raise ENtoolkitError(ierr)
 
 
@@ -62,7 +66,7 @@ def ENopen(nomeinp, nomerpt='', nomebin=''):
     nomerpt: name of an output report file
     nomebin: name of an optional binary output file
     """
-    ierr= _lib.ENopen(ctypes.c_char_p(nomeinp), ctypes.c_char_p(nomerpt), ctypes.c_char_p(nomebin))
+    ierr= _lib.ENopen(nomeinp, nomerpt, nomebin)
     if ierr!=0: raise ENtoolkitError(ierr)
 
 
@@ -78,7 +82,7 @@ def ENgetnodeindex(nodeid):
     Arguments:
     nodeid: node ID label"""
     j= ctypes.c_int()
-    ierr= _lib.ENgetnodeindex(ctypes.c_char_p(nodeid), ctypes.byref(j))
+    ierr= _lib.ENgetnodeindex(nodeid, ctypes.byref(j))
     if ierr!=0: raise ENtoolkitError(ierr)
     return j.value
 
@@ -88,10 +92,9 @@ def ENgetnodeid(index):
 
     Arguments:
     index: node index"""    
-    label = ctypes.create_string_buffer(_max_label_len)
-    ierr= _lib.ENgetnodeid(index, ctypes.byref(label))
+    ierr= _lib.ENgetnodeid(index, label)
     if ierr!=0: raise ENtoolkitError(ierr)
-    return label.value
+    return str(label)
 
 
 def ENgetnodetype(index):
@@ -152,7 +155,7 @@ def ENgetlinkindex(linkid):
     Arguments:
     linkid: link ID label"""
     j= ctypes.c_int()
-    ierr= _lib.ENgetlinkindex(ctypes.c_char_p(linkid), ctypes.byref(j))
+    ierr= _lib.ENgetlinkindex(linkid, ctypes.byref(j))
     if ierr!=0: raise ENtoolkitError(ierr)
     return j.value
 
@@ -162,10 +165,9 @@ def ENgetlinkid(index):
 
     Arguments:
     index: link index"""
-    label = ctypes.create_string_buffer(_max_label_len)
-    ierr= _lib.ENgetlinkid(index, ctypes.byref(label))
+    ierr= _lib.ENgetlinkid(index, label)
     if ierr!=0: raise ENtoolkitError(ierr)
-    return label.value
+    return str(label)
 
 
 def ENgetlinktype(index):
@@ -222,10 +224,9 @@ def ENgetpatternid(index):
 
     Arguments:
     index: pattern index"""
-    label = ctypes.create_string_buffer(_max_label_len)
-    ierr= _lib.ENgetpatternid(index, ctypes.byref(label))
+    ierr= _lib.ENgetpatternid(index, label)
     if ierr!=0: raise ENtoolkitError(ierr)
-    return label.value
+    return str(label)
 
 def ENgetpatternindex(patternid):
     """Retrieves the index of a particular time pattern.
@@ -233,7 +234,7 @@ def ENgetpatternindex(patternid):
     Arguments:
     id: pattern ID label"""
     j= ctypes.c_int()
-    ierr= _lib.ENgetpatternindex(ctypes.c_char_p(patternid), ctypes.byref(j))
+    ierr= _lib.ENgetpatternindex(patternid, ctypes.byref(j))
     if ierr!=0: raise ENtoolkitError(ierr)
     return j.value
 
@@ -446,7 +447,7 @@ def ENaddpattern(patternid):
     """Adds a new time pattern to the network.
     Arguments:
       id: ID label of pattern"""
-    ierr= _lib.ENaddpattern(ctypes.c_char_p(patternid))
+    ierr= _lib.ENaddpattern(patternid)
     if ierr!=0: raise ENtoolkitError(ierr)
 
 
@@ -487,9 +488,9 @@ def ENsetqualtype(qualcode, chemname, chemunits, tracenode):
          chemunits:	units that the chemical is measured in
          tracenode:	ID of node traced in a source tracing analysis """
     ierr= _lib.ENsetqualtype( ctypes.c_int(qualcode),
-                              ctypes.c_char_p(chemname),
-			      ctypes.c_char_p(chemunits),
-                              ctypes.c_char_p(tracenode))
+                              chemname,
+			      chemunits,
+                              tracenode)
     if ierr!=0: raise ENtoolkitError(ierr)
 
 
@@ -534,12 +535,12 @@ def ENsetoption( optioncode, value):
 #----- Saving and using hydraulic analysis results files -------
 def ENsavehydfile(fname):
     """Saves the current contents of the binary hydraulics file to a file."""
-    ierr= _lib.ENsavehydfile(ctypes.c_char_p(fname))
+    ierr= _lib.ENsavehydfile(fname)
     if ierr!=0: raise ENtoolkitError(ierr)
 
 def  ENusehydfile(fname):
     """Uses the contents of the specified file as the current binary hydraulics file"""
-    ierr= _lib.ENusehydfile(ctypes.c_char_p(fname))
+    ierr= _lib.ENusehydfile(fname)
     if ierr!=0: raise ENtoolkitError(ierr)
 
 
@@ -668,7 +669,7 @@ def ENsaveH():
 def ENsaveinpfile(fname):
     """Writes all current network input data to a file 
     using the format of an EPANET input file."""
-    ierr= _lib.ENsaveinpfile( ctypes.c_char_p(fname))
+    ierr= _lib.ENsaveinpfile( fname)
     if ierr!=0: raise ENtoolkitError(ierr)
 
 
@@ -692,7 +693,7 @@ def ENsetreport(command):
     
     Formatting commands are the same as used in the 
     [REPORT] section of the EPANET Input file."""
-    ierr= _lib.ENsetreport(ctypes.c_char_p(command))
+    ierr= _lib.ENsetreport(command)
     if ierr!=0: raise ENtoolkitError(ierr)
 
 def ENsetstatusreport(statuslevel):
@@ -707,13 +708,12 @@ def ENsetstatusreport(statuslevel):
 
 def ENgeterror(errcode):
     """Retrieves the text of the message associated with a particular error or warning code."""
-    errmsg= ctypes.create_string_buffer(_err_max_char)
-    _lib.ENgeterror( errcode,ctypes.byref(errmsg), _err_max_char )
-    return errmsg.value
+    _lib.ENgeterror( errcode, errmsg , _err_max_char )
+    return str(errmsg)
 
 def ENwriteline(line ):
     """Writes a line of text to the EPANET report file."""
-    ierr= _lib.ENwriteline(ctypes.c_char_p(line ))
+    ierr= _lib.ENwriteline(line )
     if ierr!=0: raise ENtoolkitError(ierr)
 
 
@@ -734,12 +734,11 @@ class ENtoolkitError(Exception):
 #----------------------------------------------------------------------------------
 if hasattr(_lib,"ENgetcurve"):
    def ENgetcurve(curveIndex):
-       curveid = ctypes.create_string_buffer(_max_label_len)
        nValues = ctypes.c_int()
        xValues= ctypes.POINTER(ctypes.c_float)()
        yValues= ctypes.POINTER(ctypes.c_float)()
        ierr= _lib.ENgetcurve(curveIndex,
-                             ctypes.byref(curveid),
+                             label,
 	     	             ctypes.byref(nValues),
 	     	             ctypes.byref(xValues),
 	     	             ctypes.byref(yValues)
@@ -753,12 +752,11 @@ if hasattr(_lib,"ENgetcurve"):
        return curve
 
    def ENgetcurveid(curveIndex):
-       curveid = ctypes.create_string_buffer(_max_label_len)
        nValues = ctypes.c_int()
        xValues= ctypes.POINTER(ctypes.c_float)()
        yValues= ctypes.POINTER(ctypes.c_float)()
        ierr= _lib.ENgetcurve(curveIndex,
-                             ctypes.byref(curveid),
+                             label,
 	     	             ctypes.byref(nValues),
 	     	             ctypes.byref(xValues),
 	     	             ctypes.byref(yValues)
@@ -766,129 +764,59 @@ if hasattr(_lib,"ENgetcurve"):
        # strange behavior of ENgetcurve: it returns also curveID
        # better split in two distinct functions ....
        if ierr!=0: raise ENtoolkitError(ierr)
-       return curveid.value
+       return str(label)
 
 #-----end of functions added from OpenWaterAnalytics ----------------------------------
 
+# /* Node parameters */
+from epanet2 import EN_ELEVATION, EN_BASEDEMAND, EN_PATTERN, EN_EMITTER, EN_INITQUAL, EN_SOURCEQUAL
+from epanet2 import EN_SOURCEPAT,EN_SOURCETYPE,EN_TANKLEVEL, EN_DEMAND, EN_HEAD, EN_PRESSURE      
+from epanet2 import EN_QUALITY, EN_SOURCEMASS, EN_INITVOLUME, EN_MIXMODEL, EN_MIXZONEVOL    
 
-EN_ELEVATION     = 0      # /* Node parameters */
-EN_BASEDEMAND    = 1
-EN_PATTERN       = 2
-EN_EMITTER       = 3
-EN_INITQUAL      = 4
-EN_SOURCEQUAL    = 5
-EN_SOURCEPAT     = 6
-EN_SOURCETYPE    = 7
-EN_TANKLEVEL     = 8
-EN_DEMAND        = 9
-EN_HEAD          = 10
-EN_PRESSURE      = 11
-EN_QUALITY       = 12
-EN_SOURCEMASS    = 13
-EN_INITVOLUME    = 14
-EN_MIXMODEL      = 15
-EN_MIXZONEVOL    = 16
+from epanet2 import EN_TANKDIAM,EN_MINVOLUME,EN_VOLCURVE,EN_MINLEVEL,EN_MAXLEVEL,EN_MIXFRACTION,EN_TANK_KBULK
 
-EN_TANKDIAM      = 17
-EN_MINVOLUME     = 18
-EN_VOLCURVE      = 19
-EN_MINLEVEL      = 20
-EN_MAXLEVEL      = 21
-EN_MIXFRACTION   = 22
-EN_TANK_KBULK    = 23
+# /* Link parameters */
+from epanet2 import EN_DIAMETER,EN_LENGTH,EN_ROUGHNESS,EN_MINORLOSS,EN_INITSTATUS,EN_INITSETTING
+from epanet2 import EN_KBULK,EN_KWALL,EN_FLOW,EN_VELOCITY,EN_HEADLOSS,EN_STATUS,EN_SETTING,EN_ENERGY
 
-EN_DIAMETER      = 0      # /* Link parameters */
-EN_LENGTH        = 1
-EN_ROUGHNESS     = 2
-EN_MINORLOSS     = 3
-EN_INITSTATUS    = 4
-EN_INITSETTING   = 5
-EN_KBULK         = 6
-EN_KWALL         = 7
-EN_FLOW          = 8
-EN_VELOCITY      = 9
-EN_HEADLOSS      = 10
-EN_STATUS        = 11
-EN_SETTING       = 12
-EN_ENERGY        = 13
+# /* Time parameters */
+from epanet2 import EN_DURATION,EN_HYDSTEP,EN_QUALSTEP,EN_PATTERNSTEP,EN_PATTERNSTART
+from epanet2 import EN_REPORTSTEP,EN_REPORTSTART,EN_RULESTEP,EN_STATISTIC,EN_PERIODS 
 
-EN_DURATION      = 0      # /* Time parameters */
-EN_HYDSTEP       = 1
-EN_QUALSTEP      = 2
-EN_PATTERNSTEP   = 3
-EN_PATTERNSTART  = 4
-EN_REPORTSTEP    = 5
-EN_REPORTSTART   = 6
-EN_RULESTEP      = 7
-EN_STATISTIC     = 8
-EN_PERIODS       = 9
+# /* Component counts */
+from epanet2 import EN_NODECOUNT,EN_TANKCOUNT,EN_LINKCOUNT,EN_PATCOUNT,EN_CURVECOUNT,EN_CONTROLCOUNT 
 
-EN_NODECOUNT     = 0      # /* Component counts */
-EN_TANKCOUNT     = 1
-EN_LINKCOUNT     = 2
-EN_PATCOUNT      = 3
-EN_CURVECOUNT    = 4
-EN_CONTROLCOUNT  = 5
+# /* Node types */
+from epanet2 import EN_JUNCTION,EN_RESERVOIR,EN_TANK
 
-EN_JUNCTION      = 0      # /* Node types */
-EN_RESERVOIR     = 1
-EN_TANK          = 2
+# /* Link types */
+from epanet2 import EN_CVPIPE,EN_PIPE,EN_PUMP,EN_PRV,EN_PSV,EN_PBV,EN_FCV,EN_TCV,EN_GPV
 
-EN_CVPIPE        = 0      # /* Link types */
-EN_PIPE          = 1
-EN_PUMP          = 2
-EN_PRV           = 3
-EN_PSV           = 4
-EN_PBV           = 5
-EN_FCV           = 6
-EN_TCV           = 7
-EN_GPV           = 8
+# /* Quality analysis types */
+from epanet2 import EN_NONE,EN_CHEM,EN_AGE,EN_TRACE
 
-EN_NONE          = 0      # /* Quality analysis types */
-EN_CHEM          = 1
-EN_AGE           = 2
-EN_TRACE         = 3
+# /* Source quality types */
+from epanet2 import EN_CONCEN,EN_MASS,EN_SETPOINT,EN_FLOWPACED
 
-EN_CONCEN        = 0      # /* Source quality types */
-EN_MASS          = 1
-EN_SETPOINT      = 2
-EN_FLOWPACED     = 3
+# /* Flow units types */
+from epanet2 import EN_CFS,EN_GPM,EN_MGD,EN_IMGD,EN_AFD,EN_LPS,EN_LPM,EN_MLD,EN_CMH,EN_CMD 
 
-EN_CFS           = 0      # /* Flow units types */
-EN_GPM           = 1
-EN_MGD           = 2
-EN_IMGD          = 3
-EN_AFD           = 4
-EN_LPS           = 5
-EN_LPM           = 6
-EN_MLD           = 7
-EN_CMH           = 8
-EN_CMD           = 9
+# /* Misc. options */
+from epanet2 import EN_TRIALS,EN_ACCURACY,EN_TOLERANCE,EN_EMITEXPON,EN_DEMANDMULT
 
-EN_TRIALS        = 0      # /* Misc. options */
-EN_ACCURACY      = 1
-EN_TOLERANCE     = 2
-EN_EMITEXPON     = 3
-EN_DEMANDMULT    = 4
+# /* Control types */
+from epanet2 import EN_LOWLEVEL,EN_HILEVEL,EN_TIMER,EN_TIMEOFDAY
 
-EN_LOWLEVEL      = 0      # /* Control types */
-EN_HILEVEL       = 1
-EN_TIMER         = 2
-EN_TIMEOFDAY     = 3
+# /* Time statistic types.    */
+from epanet2 import EN_AVERAGE,EN_MINIMUM,EN_MAXIMUM,EN_RANGE
 
-EN_AVERAGE       = 1      # /* Time statistic types.    */
-EN_MINIMUM       = 2
-EN_MAXIMUM       = 3
-EN_RANGE         = 4
+# /* Tank mixing models */
+from epanet2 import EN_MIX1,EN_MIX2,EN_FIFO,EN_LIFO
 
-EN_MIX1          = 0      # /* Tank mixing models */
-EN_MIX2          = 1
-EN_FIFO          = 2
-EN_LIFO          = 3
-
-EN_NOSAVE        = 0      # /* Save-results-to-file flag */
-EN_SAVE          = 1
-EN_INITFLOW      = 10     # /* Re-initialize flow flag   */
+# /* Save-results-to-file flag */
+from epanet2 import EN_NOSAVE,EN_SAVE
+# /* Re-initialize flow flag   */
+from epanet2 import EN_INITFLOW
 
 
 
