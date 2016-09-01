@@ -1,7 +1,7 @@
-#!/usr/bin/env python
 """Python EpanetToolkit interface
 
 added function ENsimtime"""
+
 
 import ctypes
 import platform
@@ -9,7 +9,7 @@ import datetime
 
 _plat= platform.system()
 if _plat=='Linux':
-  _lib = ctypes.CDLL("libepanet.so.2")
+  _lib = ctypes.CDLL("libepanet2.so.2")
 elif _plat=='Windows':
   try:
     # if epanet2.dll compiled with __cdecl (as in OpenWaterAnalytics)
@@ -49,8 +49,10 @@ def ENepanet(nomeinp, nomerpt='', nomebin='', vfunc=None):
         callback= CFUNC(vfunc)
     else:
         callback= None
-    ierr= _lib.ENepanet(ctypes.c_char_p(nomeinp), ctypes.c_char_p(nomerpt), ctypes.c_char_p(nomebin), callback)
-    print ierr
+    ierr= _lib.ENepanet(ctypes.c_char_p(nomeinp.encode()), 
+                        ctypes.c_char_p(nomerpt.encode()), 
+                        ctypes.c_char_p(nomebin.encode()), 
+                        callback)
     if ierr!=0: raise ENtoolkitError(ierr)
 
 
@@ -62,8 +64,11 @@ def ENopen(nomeinp, nomerpt='', nomebin=''):
     nomerpt: name of an output report file
     nomebin: name of an optional binary output file
     """
-    ierr= _lib.ENopen(ctypes.c_char_p(nomeinp), ctypes.c_char_p(nomerpt), ctypes.c_char_p(nomebin))
-    if ierr!=0: raise ENtoolkitError(ierr)
+    ierr= _lib.ENopen(ctypes.c_char_p(nomeinp.encode()), 
+                      ctypes.c_char_p(nomerpt.encode()), 
+                      ctypes.c_char_p(nomebin.encode()))
+    if ierr!=0: 
+      raise ENtoolkitError(ierr)
 
 
 def ENclose():
@@ -78,7 +83,7 @@ def ENgetnodeindex(nodeid):
     Arguments:
     nodeid: node ID label"""
     j= ctypes.c_int()
-    ierr= _lib.ENgetnodeindex(ctypes.c_char_p(nodeid), ctypes.byref(j))
+    ierr= _lib.ENgetnodeindex(ctypes.c_char_p(nodeid.encode()), ctypes.byref(j))
     if ierr!=0: raise ENtoolkitError(ierr)
     return j.value
 
@@ -152,7 +157,7 @@ def ENgetlinkindex(linkid):
     Arguments:
     linkid: link ID label"""
     j= ctypes.c_int()
-    ierr= _lib.ENgetlinkindex(ctypes.c_char_p(linkid), ctypes.byref(j))
+    ierr= _lib.ENgetlinkindex(ctypes.c_char_p(linkid.encode()), ctypes.byref(j))
     if ierr!=0: raise ENtoolkitError(ierr)
     return j.value
 
@@ -233,7 +238,7 @@ def ENgetpatternindex(patternid):
     Arguments:
     id: pattern ID label"""
     j= ctypes.c_int()
-    ierr= _lib.ENgetpatternindex(ctypes.c_char_p(patternid), ctypes.byref(j))
+    ierr= _lib.ENgetpatternindex(ctypes.c_char_p(patternid.encode()), ctypes.byref(j))
     if ierr!=0: raise ENtoolkitError(ierr)
     return j.value
 
@@ -446,7 +451,7 @@ def ENaddpattern(patternid):
     """Adds a new time pattern to the network.
     Arguments:
       id: ID label of pattern"""
-    ierr= _lib.ENaddpattern(ctypes.c_char_p(patternid))
+    ierr= _lib.ENaddpattern(ctypes.c_char_p(patternid.encode()))
     if ierr!=0: raise ENtoolkitError(ierr)
 
 
@@ -487,9 +492,9 @@ def ENsetqualtype(qualcode, chemname, chemunits, tracenode):
          chemunits:	units that the chemical is measured in
          tracenode:	ID of node traced in a source tracing analysis """
     ierr= _lib.ENsetqualtype( ctypes.c_int(qualcode),
-                              ctypes.c_char_p(chemname),
-			      ctypes.c_char_p(chemunits),
-                              ctypes.c_char_p(tracenode))
+                              ctypes.c_char_p(chemname.encode()),
+			      ctypes.c_char_p(chemunits.encode()),
+                              ctypes.c_char_p(tracenode.encode()))
     if ierr!=0: raise ENtoolkitError(ierr)
 
 
@@ -534,12 +539,12 @@ def ENsetoption( optioncode, value):
 #----- Saving and using hydraulic analysis results files -------
 def ENsavehydfile(fname):
     """Saves the current contents of the binary hydraulics file to a file."""
-    ierr= _lib.ENsavehydfile(ctypes.c_char_p(fname))
+    ierr= _lib.ENsavehydfile(ctypes.c_char_p(fname.encode()))
     if ierr!=0: raise ENtoolkitError(ierr)
 
 def  ENusehydfile(fname):
     """Uses the contents of the specified file as the current binary hydraulics file"""
-    ierr= _lib.ENusehydfile(ctypes.c_char_p(fname))
+    ierr= _lib.ENusehydfile(ctypes.c_char_p(fname.encode()))
     if ierr!=0: raise ENtoolkitError(ierr)
 
 
@@ -668,7 +673,7 @@ def ENsaveH():
 def ENsaveinpfile(fname):
     """Writes all current network input data to a file 
     using the format of an EPANET input file."""
-    ierr= _lib.ENsaveinpfile( ctypes.c_char_p(fname))
+    ierr= _lib.ENsaveinpfile( ctypes.c_char_p(fname.encode()))
     if ierr!=0: raise ENtoolkitError(ierr)
 
 
@@ -692,7 +697,7 @@ def ENsetreport(command):
     
     Formatting commands are the same as used in the 
     [REPORT] section of the EPANET Input file."""
-    ierr= _lib.ENsetreport(ctypes.c_char_p(command))
+    ierr= _lib.ENsetreport(ctypes.c_char_p(command.encode()))
     if ierr!=0: raise ENtoolkitError(ierr)
 
 def ENsetstatusreport(statuslevel):
@@ -709,11 +714,11 @@ def ENgeterror(errcode):
     """Retrieves the text of the message associated with a particular error or warning code."""
     errmsg= ctypes.create_string_buffer(_err_max_char)
     _lib.ENgeterror( errcode,ctypes.byref(errmsg), _err_max_char )
-    return errmsg.value
+    return errmsg.value.decode()
 
 def ENwriteline(line ):
     """Writes a line of text to the EPANET report file."""
-    ierr= _lib.ENwriteline(ctypes.c_char_p(line ))
+    ierr= _lib.ENwriteline(ctypes.c_char_p(line.encode() ))
     if ierr!=0: raise ENtoolkitError(ierr)
 
 

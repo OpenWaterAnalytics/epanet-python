@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """This example illustrates how the Toolkit could be used
 to develop a hydrant rating curve used in fire flow studies.
 This curve shows the amount of flow available at a node in 
@@ -38,4 +39,4 @@ def HydrantRating( MyNode, Demands):
    return rating
    
 if __name__=='__main__':
-  print  HydrantRating('3', [0.0, 10.0, 20.0, 50.0, 100.0]  )
+  print  (HydrantRating('3', [0.0, 10.0, 20.0, 50.0, 100.0]  ))

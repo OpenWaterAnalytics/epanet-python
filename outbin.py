@@ -1,5 +1,6 @@
 #! /usr/bin/python
 import struct
+from io import SEEK_END
 
 MAGICNUMBER=     516114521
 MAXFNAME=  259  #/* Max. # characters in file name         */
@@ -36,7 +37,7 @@ _waterquality= { 0: ""   #none
                 ,1: "chemical"
                 ,2: "age"
                 ,3: "source trace"
-	       }
+               }
 
 _status=  {0 : "closed (max. head exceeded for pump)"
           ,1 : "temporarily closed"                              
@@ -74,7 +75,7 @@ class OutBinNode(object):
         return self.outfile.nodeID(self.ordinal+1)
     @property
     def nodetype(self):
-	"node type"
+        "node type"
         return self._type
     @property
     def demand(self):
@@ -99,14 +100,14 @@ class OutBinLink(object):
         self.ordinal= ordinal
     def _read_timeserie(self, varindex):
         return self.outfile._link_timeserie(self.ordinal,
-	                                    varindex)
+                                            varindex)
     @property
     def ID(self):
-	"link ID"
+        "link ID"
         return self.outfile.linkID(self.ordinal+1)
     @property
     def linktype(self):
-	"link type"
+        "link type"
         return self.outfile.linktype(self.ordinal+1)
     @property
     def flow(self):
@@ -133,8 +134,8 @@ class OutBinLink(object):
     @property
     def setting(self):
         """link setting
-	
-	Roughness coeff. for Pipes,
+        
+        Roughness coeff. for Pipes,
         Speed for Pumps
         Setting for Valves"""
         return self._read_timeserie(varindex=5)
@@ -195,12 +196,13 @@ class EpanetOutBin(object):
         Rstep        =Prolog[13]
         Dur          =Prolog[14]
 
-        if Tstatflag==0:
-            self._Nperiods= ( Dur-Rstart)/ Rstep+ 1
-        else:
-            self._Nperiods= 1
+        f.seek(-3*INTSIZE, SEEK_END)
+        self._Nperiods, warn, magic = struct.unpack("3i",f.read(3*INTSIZE))
+        if magic != MAGICNUMBER :
+          raise Exception("File {0} corrupted or incomplete".format(nomefilebin))
 
-	self.prolog_start= 0
+ 
+        self.prolog_start= 0
         prolog_length = 15*INTSIZE
         prolog_length+= 3*(MAXMSG+1) #title
         prolog_length+= 2*(MAXFNAME+1) #filenames
@@ -223,12 +225,6 @@ class EpanetOutBin(object):
 
         self.epilog_start= self.dynamic_start+dynamic_lenght
 
-        f.seek(self.epilog_start)
-        Epilog = struct.unpack("4f3i",f.read(7*4))
-        if Epilog[6]!= MAGICNUMBER :
-          raise Exception("File {0} corrupted or incomplete".format(nomefilebin))
-
-
         self._nodes= {}
         for i in range(self._Nnodes):
           node= OutBinNode(self, i)
@@ -241,8 +237,8 @@ class EpanetOutBin(object):
            else:
               tipo= "RESERVOIR"
            nodo= self._nodes[self.tanknode(i)]
-	   nodo._type= tipo
-	   nodo.area= area
+           nodo._type= tipo
+           nodo.area= area
 
         self._links= {}
         for i in range(self._Nlinks):
@@ -259,19 +255,19 @@ class EpanetOutBin(object):
           
     def __exit__(self ,type, value, traceback):
         self._file.close()
-	return False
+        return False
 
 
 
     @property
     def nodes(self):
         "nodes dictionary (node ID as key)"
-	return self._nodes
-	 
+        return self._nodes
+         
     @property
     def links(self):
         "links dictionary (link ID as key)"
-	return self._links
+        return self._links
 
 
     @property
@@ -344,7 +340,7 @@ class EpanetOutBin(object):
     def chemicalname(self):
         "Name of Chemical"
         addr = self.prolog_start+ 15*INTSIZE
-	addr+= 3*(MAXMSG+1)+ 2*(MAXFNAME+1)
+        addr+= 3*(MAXMSG+1)+ 2*(MAXFNAME+1)
         self._file.seek(addr)
         return self._file.read(MAXID+1).decode().strip("\x00")
 
@@ -352,8 +348,8 @@ class EpanetOutBin(object):
     def chemicalunits(self):
         "Chemical Concentration Units "
         addr = self.prolog_start+ 15*INTSIZE
-	addr+= 3*(MAXMSG+1)+ 2*(MAXFNAME+1)
-	addr+= MAXID+1
+        addr+= 3*(MAXMSG+1)+ 2*(MAXFNAME+1)
+        addr+= MAXID+1
         self._file.seek(addr)
         return self._file.read(MAXID+1).decode().strip("\x00")
 
@@ -398,15 +394,15 @@ class EpanetOutBin(object):
     def _node_timeserie(self, ordinal, varindex):
         addr = self.dynamic_start
         addr+= varindex*REAL4SIZE*self._Nnodes
-	addr+= ordinal* REAL4SIZE
-	return self._read_timeserie(addr)
+        addr+= ordinal* REAL4SIZE
+        return self._read_timeserie(addr)
 
     def _link_timeserie(self, ordinal, varindex):
         addr = self.dynamic_start
         addr+= 4*REAL4SIZE*self._Nnodes
         addr+= varindex*REAL4SIZE*self._Nlinks
-	addr+= ordinal* REAL4SIZE
-	return self._read_timeserie(addr)
+        addr+= ordinal* REAL4SIZE
+        return self._read_timeserie(addr)
 
     def _read_timeserie(self, addr):
         x=[]
