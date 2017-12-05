@@ -532,7 +532,7 @@ def ENsetoption( optioncode, value):
                               EN_EMITEXPON 
                               EN_DEMANDMULT
       value:  option value"""
-    ierr= _lib.ENsetoption(ctypes.c_int(paramcode), ctypes.c_float(value))
+    ierr= _lib.ENsetoption(ctypes.c_int(optioncode), ctypes.c_float(value))
     if ierr!=0: raise ENtoolkitError(ierr)
 
 
