@@ -23,11 +23,11 @@ setup(
     version = "0.0.1",
     ext_modules = [
         Extension("_epanet_toolkit",
-            include_dirs = ['lib/'],           
+            include_dirs = ['include/'],
             libraries = ['epanet'],
             library_dirs = ['lib/'],      
             sources = ['src/epanet_toolkit.i'],
-            swig_opts=['-modern'],
+            swig_opts=['-py3'],
             language = 'C'
         )
     ],
