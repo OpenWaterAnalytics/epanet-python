@@ -7,7 +7,7 @@
  *              US EPA - ORD/NRMRL
  *
 */ 
-%module epanet_output
+%module(package="epanet") output
 %{
 #include "errormanager.h"
 #include "messages.h"

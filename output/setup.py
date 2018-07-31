@@ -21,20 +21,20 @@ except ImportError:
     from distutils.command.build_ext import build_ext
 
 setup(
-    name = "epanet-output", 
+    name = "epanet_output", 
     version = "0.1.0-alpha",
     ext_modules = [
-        Extension("_epanet_output",
-            define_macros = [('epanet_output_EXPORTS', None)],
-            include_dirs = ['include'],
-            sources = ['src/epanet_output.i', 'src/epanet_output.c', 'src/errormanager.c'],
-            swig_opts=['-modern'],
+        Extension("epanet/output/t_output",
+            include_dirs = ['epanet/output'],
+            sources = ['epanet/output/output.i'],
+            swig_opts=['-py3'],
             language = 'C'
         )
     ],
-    package_dir = {'':'src'},  
-    py_modules = ['epanet_output'],
-      
+    packages = {'epanet.output'},  
+    py_modules = ['output'],
+    package_data = {'epanet.output':['*epanet-output.dll', '*epanet-output.so']}, 
+ 
     install_requires = [
         'enum34'
     ]

@@ -10,7 +10,7 @@
  *
 */ 
 
-%module epanet_toolkit
+%module(package="epanet") toolkit
 %{
 #include "epanet2.h"
 
