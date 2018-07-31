@@ -177,6 +177,10 @@ and return a (possibly) different pointer */
 /* RENAME FUNCTIONS PYTHON STYLE */
 %rename("%(undercase)s") "";
 
+/* GENERATES DOCUMENTATION */
+%feature("autodoc", "2");
+
+
 /* INSERTS CUSTOM EXCEPTION HANDLING IN WRAPPER */
 %exception
 {
