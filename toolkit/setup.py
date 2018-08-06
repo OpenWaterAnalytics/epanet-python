@@ -19,20 +19,21 @@ except ImportError:
     from distutils.command.build_ext import build_ext
 
 setup(
-    name = "epanet-toolkit", 
+    name = "epanet_toolkit", 
     version = "0.0.1",
     ext_modules = [
-        Extension("_epanet_toolkit",
-            include_dirs = ['include/'],
+        Extension("epanet.toolkit._toolkit",
+            include_dirs = ['epanet/toolkit/'],
             libraries = ['epanet'],
-            library_dirs = ['lib/'],      
-            sources = ['src/epanet_toolkit.i'],
+            library_dirs = ['epanet/toolkit'],
+            sources = ['epanet/toolkit/toolkit.i'],
             swig_opts=['-py3'],
             language = 'C'
         )
     ],
-    package_dir = {'':'src'},  
-    py_modules = ['epanet_toolkit'],
+    packages = {'epanet.toolkit'},  
+    py_modules = ['toolkit'],
+    package_data = {'epanet.toolkit':['*epanet.dll', '*epanet.so']}, 
       
     install_requires = [
         'enum34'
