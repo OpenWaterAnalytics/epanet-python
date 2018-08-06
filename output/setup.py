@@ -24,8 +24,10 @@ setup(
     name = "epanet_output", 
     version = "0.1.0-alpha",
     ext_modules = [
-        Extension("epanet/output/t_output",
+        Extension("epanet.output._output",
             include_dirs = ['epanet/output'],
+            libraries = ['epanet-output'],
+            library_dirs = ['epanet/output'],
             sources = ['epanet/output/output.i'],
             swig_opts=['-py3'],
             language = 'C'

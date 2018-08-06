@@ -22,11 +22,11 @@ setup(
     name = "epanet_toolkit", 
     version = "0.0.1",
     ext_modules = [
-        Extension("epanet/toolkit/_toolkit",
+        Extension("epanet.toolkit._toolkit",
             include_dirs = ['epanet/toolkit/'],
             libraries = ['epanet'],
-            library_dirs = ['epanet/toolkit'],      
-            sources = ['epanet/toolkit/_toolkit.i'],
+            library_dirs = ['epanet/toolkit'],
+            sources = ['epanet/toolkit/toolkit.i'],
             swig_opts=['-py3'],
             language = 'C'
         )

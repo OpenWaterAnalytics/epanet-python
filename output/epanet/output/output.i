@@ -9,8 +9,6 @@
 */ 
 %module(package="epanet") output
 %{
-#include "errormanager.h"
-#include "messages.h"
 #include "epanet_output.h"
 
 #define SWIG_FILE_WITH_INIT
