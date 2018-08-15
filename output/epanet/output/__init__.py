@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import imghdr
 
 #
 #  __init__.py - EPANET output package
@@ -49,6 +48,7 @@ class RxUnits(Enum):
     UGH       = auto()
     
 class OutputMetadata():
+    '''A simple attribute name and unit lookup.'''
     
     _unit_labels_us_ = {
         Units.HYD_HEAD:       "ft",
@@ -99,14 +99,14 @@ class OutputMetadata():
 
                
     def __init__(self, output_handle):
-       
+        
+        # If outputhandle not initialized use default settings
         if output_handle == None: 
-            # Default project settings
             self.units = [oapi.FlowUnits.GPM.value, 
                           oapi.PressUnits.PSI.value, 
                           oapi.QualUnits.NONE.value]
+        # Else quary the output api for unit settings
         else:
-            # Quary output file for unit settings
             for u in oapi.Units:    
                 self.units.append(oapi.getunits(output_handle, u))
                 
@@ -114,13 +114,13 @@ class OutputMetadata():
         self._press = oapi.PressUnits(self.units[1])
         self._qual = oapi.QualUnits(self.units[2])
         
-        # Determine unit system
+        # Determine unit system from flow setting
         if self._flow.value <= oapi.FlowUnits.AFD.value:
             self.unit_labels = type(self)._unit_labels_us_
         else:
             self.unit_labels = type(self)._unit_labels_si_    
         
-        # Determine mass units
+        # Determine mass units from quality unit settings
         if self._qual == oapi.QualUnits.MGL:
             self._rx_rate = RxUnits.MGH
         elif self._qual == oapi.QualUnits.UGL:
