@@ -78,10 +78,12 @@ class OutputMetadata():
         Units.HYD_HEAD:       "m",
         Units.VELOCITY:       "m/sec",
         Units.HEADLOSS:       "m/Km", 
-        Units.RX_RATE:        "mass/hr",
         Units.UNITLESS:       "unitless",
         Units.NONE:           "",
     
+        RxUnits.MGH:          "mg/hr",
+        RxUnits.UGH:          "ug/hr",
+        
         oapi.FlowUnits.LPS:   "L/sec",
         oapi.FlowUnits.LPM:   "L/min",
         oapi.FlowUnits.MLD:   "M L/day",
