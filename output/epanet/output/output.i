@@ -22,24 +22,52 @@
 typedef void* ENR_Handle;
 
 typedef enum {
-	ENR_node = 1,
-    ENR_link = 2
+	ENR_node        = 1,
+    ENR_link        = 2
 } ENR_ElementType;
-
-/*
-typedef enum {
-    ENR_nodeCount  = 1,
-    ENR_tankCount  = 2,
-    ENR_linkCount  = 3,
-    ENR_pumpCount  = 4,
-    ENR_valveCount = 5
-} ENR_ElementCount;
-*/
 
 typedef enum {
     ENR_flowUnits   = 1,
-    ENR_pressUnits  = 2
+    ENR_pressUnits  = 2,
+    ENR_chemUnits   = 3
 } ENR_Units;
+
+typedef enum {
+    ENR_CFS         = 0,
+    ENR_GPM         = 1,
+    ENR_MGD         = 2,
+    ENR_IMGD        = 3,
+    ENR_AFD         = 4,
+    ENR_LPS         = 5,
+    ENR_LPM         = 6,
+    ENR_MLD         = 7,
+    ENR_CMH         = 8,
+    ENR_CMD         = 9
+} ENR_FlowUnits;
+
+typedef enum {
+    ENR_PSI         = 0,
+    ENR_MTR         = 1,
+    ENR_KPA         = 2
+} ENR_PressUnits;
+
+typedef enum {
+    ENR_NONE        = 0,
+    ENR_MGL         = 1,
+    ENR_UGL         = 2,
+    ENR_HOURS       = 3,
+    ENR_PRCNT       = 4
+} ENR_ChemUnits;
+
+/*
+typedef enum {
+    ENR_nodeCount   = 1,
+    ENR_tankCount   = 2,
+    ENR_linkCount   = 3,
+    ENR_pumpCount   = 4,
+    ENR_valveCount  = 5
+} ENR_ElementCount;
+*/
 
 typedef enum {
     ENR_reportStart = 1,
@@ -49,21 +77,21 @@ typedef enum {
 }ENR_Time;
 
 typedef enum {
-    ENR_demand   = 1,
-    ENR_head     = 2,
-    ENR_pressure = 3,
-    ENR_quality  = 4
+    ENR_demand      = 1,
+    ENR_head        = 2,
+    ENR_pressure    = 3,
+    ENR_quality     = 4
 } ENR_NodeAttribute;
 
 typedef enum {
-    ENR_flow         = 1,
-    ENR_velocity     = 2,
-    ENR_headloss     = 3,
-    ENR_avgQuality   = 4,
-    ENR_status       = 5,
-    ENR_setting      = 6,
-    ENR_rxRate       = 7,
-    ENR_frctnFctr    = 8
+    ENR_flow        = 1,
+    ENR_velocity    = 2,
+    ENR_headloss    = 3,
+    ENR_avgQuality  = 4,
+    ENR_status      = 5,
+    ENR_setting     = 6,
+    ENR_rxRate      = 7,
+    ENR_frctnFctr   = 8
 } ENR_LinkAttribute;
 
 #ifdef WINDOWS
@@ -173,7 +201,7 @@ and return a (possibly) different pointer */
 
 
 /* RENAME FUNCTIONS PYTHON STYLE */
-%rename("%(undercase)s") "";
+%rename("%(regex:/^\w+_([a-zA-Z]+)/\L\\1/)s") "";
 
 /* GENERATES DOCUMENTATION */
 %feature("autodoc", "2");
@@ -225,13 +253,42 @@ int DLLEXPORT ENR_checkError(ENR_Handle p_handle, char** msg_buffer);
 import enum
 
 class ElementType(enum.Enum):
-    NODE = ENR_node
-    LINK = ENR_link
+    NODE         = ENR_node
+    LINK         = ENR_link
 
 class Units(enum.Enum):
-    FLOW_UNIT = ENR_flowUnits
-    PRESS_UNIT = ENR_pressUnits
-
+    FLOW         = ENR_flowUnits
+    PRESS        = ENR_pressUnits
+    CHEM         = ENR_chemUnits
+    
+class UnitSystem(Enum):
+    US_CUST      = 0   
+    SI_METRIC    = 1
+            
+class FlowUnits(enum.Enum):
+    CFS          = ENR_CFS
+    GPM          = ENR_GPM
+    MGD          = ENR_MGD
+    IMGD         = ENR_IMGD
+    AFD          = ENR_AFD
+    LPS          = ENR_LPS
+    LPM          = ENR_LPM
+    MLD          = ENR_MLD
+    CMH          = ENR_CMH
+    CMD          = ENR_CMD
+            
+class PressUnits(enum.Enum):
+    PSI          = ENR_PSI 
+    MTR          = ENR_MTR
+    KPA          = ENR_KPA
+        
+class ConcUnits(enum.Enum):
+    NONE         = ENR_NONE
+    MGL          = ENR_MGL
+    UGL          = ENR_UGL
+    HOURS        = ENR_HOURS
+    PRCNT        = ENR_PRCNT   
+        
 class Time(enum.Enum):
     REPORT_START = ENR_reportStart
     REPORT_STEP  = ENR_reportStep
@@ -239,18 +296,18 @@ class Time(enum.Enum):
     NUM_PERIODS  = ENR_numPeriods
     
 class NodeAttribute(enum.Enum):
-    DEMAND   = ENR_demand
-    HEAD     = ENR_head
-    PRESSURE = ENR_pressure
-    QUALITY  = ENR_quality
+    DEMAND       = ENR_demand
+    HEAD         = ENR_head
+    PRESSURE     = ENR_pressure
+    QUALITY      = ENR_quality
     
 class LinkAttribute(enum.Enum):
-    FLOW        = ENR_flow
-    VELOCITY    = ENR_velocity
-    HEADLOSS    = ENR_headloss
-    AVG_QUALITY = ENR_avgQuality
-    STATUS      = ENR_status
-    SETTING     = ENR_setting
-    RX_RATE     = ENR_rxRate
-    FRCTN_FCTR  = ENR_frctnFctr
+    FLOW         = ENR_flow
+    VELOCITY     = ENR_velocity
+    HEADLOSS     = ENR_headloss
+    AVG_QUALITY  = ENR_avgQuality
+    STATUS       = ENR_status
+    SETTING      = ENR_setting
+    RX_RATE      = ENR_rxRate
+    FRCTN_FCTR   = ENR_frctnFctr
 %}
