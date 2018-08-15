@@ -29,7 +29,7 @@ typedef enum {
 typedef enum {
     ENR_flowUnits   = 1,
     ENR_pressUnits  = 2,
-    ENR_chemUnits   = 3
+    ENR_qualUnits   = 3
 } ENR_Units;
 
 typedef enum {
@@ -57,7 +57,7 @@ typedef enum {
     ENR_UGL         = 2,
     ENR_HOURS       = 3,
     ENR_PRCNT       = 4
-} ENR_ChemUnits;
+} ENR_QualUnits;
 
 /*
 typedef enum {
@@ -259,11 +259,7 @@ class ElementType(enum.Enum):
 class Units(enum.Enum):
     FLOW         = ENR_flowUnits
     PRESS        = ENR_pressUnits
-    CHEM         = ENR_chemUnits
-    
-class UnitSystem(Enum):
-    US_CUST      = 0   
-    SI_METRIC    = 1
+    QUAL         = ENR_qualUnits
             
 class FlowUnits(enum.Enum):
     CFS          = ENR_CFS
@@ -282,7 +278,7 @@ class PressUnits(enum.Enum):
     MTR          = ENR_MTR
     KPA          = ENR_KPA
         
-class ConcUnits(enum.Enum):
+class QualUnits(enum.Enum):
     NONE         = ENR_NONE
     MGL          = ENR_MGL
     UGL          = ENR_UGL
