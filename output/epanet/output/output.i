@@ -17,12 +17,11 @@
 %include "typemaps.i"
 
 /* DEFINE AND TYPEDEF MUST BE INCLUDED */
-#define MAXMSG 53
 
 typedef void* ENR_Handle;
 
 typedef enum {
-	ENR_node        = 1,
+    ENR_node        = 1,
     ENR_link        = 2
 } ENR_ElementType;
 

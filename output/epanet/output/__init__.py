@@ -46,9 +46,12 @@ class Units(Enum):
 class RxUnits(Enum):
     MGH       = auto() 
     UGH       = auto()
-    
+
+
 class OutputMetadata():
-    '''A simple attribute name and unit lookup.'''
+    '''
+    Simple attribute name and unit lookup.
+    '''
     
     _unit_labels_us_ = {
         Units.HYD_HEAD:       "ft",
@@ -111,7 +114,8 @@ class OutputMetadata():
         else:
             for u in oapi.Units:    
                 self.units.append(oapi.getunits(output_handle, u))
-                
+        
+        # Convert unit settings to enums        
         self._flow = oapi.FlowUnits(self.units[0])
         self._press = oapi.PressUnits(self.units[1])
         self._qual = oapi.QualUnits(self.units[2])
@@ -122,13 +126,14 @@ class OutputMetadata():
         else:
             self.unit_labels = type(self)._unit_labels_si_    
         
-        # Determine mass units from quality unit settings
+        # Determine mass units from quality settings
         if self._qual == oapi.QualUnits.MGL:
             self._rx_rate = RxUnits.MGH
         elif self._qual == oapi.QualUnits.UGL:
             self._rx_rate = RxUnits.UGH
         else:
             self._rx_rate = Units.NONE          
+
 
         self._metadata = {
             oapi.NodeAttribute.DEMAND:      ("Demand",          self.unit_labels[self._flow]),
@@ -148,7 +153,10 @@ class OutputMetadata():
 
         
     def get_attribute_metadata(self, attribute):
-        return (self._metadata[attribute][0], self._metadata[attribute][1])
+        '''
+        Takes an attribute enum and returns the name and units in a tuple.
+        '''
+        return self._metadata[attribute]
 
 
 # Units of Measurement
@@ -182,4 +190,3 @@ class OutputMetadata():
 #   Velocity                   feet/sec                 meters/sec
 #   Volume                     cubic feet               cubic meters
 #   Water Age                  hours                    hours
-
