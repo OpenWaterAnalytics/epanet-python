@@ -105,6 +105,7 @@ class OutputMetadata():
                
     def __init__(self, output_handle):
         
+        self.units = list()
         # If outputhandle not initialized use default settings
         if output_handle == None: 
             self.units = [oapi.FlowUnits.GPM.value, 
