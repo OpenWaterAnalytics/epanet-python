@@ -118,7 +118,14 @@ and return a (possibly) different pointer */
  /* OUTPUT argout */
     %append_output(SWIG_NewPointerObj(SWIG_as_voidptr(retval$argnum), $1_descriptor, 0));
 } 
+%typemap(in) ENR_Handle* p_handle_inout (ENR_Handle retval)
+{
+   /* INOUT in */
+   SWIG_ConvertPtr(obj0,SWIG_as_voidptrptr(&retval), 0, 0);
+    $1 = &retval;
+} 
 /* No need for special IN typemap for opaque pointers, it works anyway */
+
 
 
 /* TYPEMAP FOR IGNORING INT ERROR CODE RETURN VALUE */
@@ -231,16 +238,26 @@ int DLLEXPORT ENR_getEnergyUsage(ENR_Handle p_handle, int pumpIndex,
 		int* int_out, float** float_out, int* int_dim);
 int DLLEXPORT ENR_getNetReacts(ENR_Handle p_handle, float** float_out, int* int_dim);
 
-
+int DLLEXPORT ENR_getNodeSeries(ENR_Handle p_handle_in, int nodeIndex, ENR_NodeAttribute t_enum,
+    int startPeriod, int endPeriod, float** float_out, int* int_dim);
+int DLLEXPORT ENR_getLinkSeries(ENR_Handle p_handle_in, int linkIndex, ENR_LinkAttribute t_enum,
+    int startPeriod, int endPeriod, float** float_out, int* int_dim);
+        
 int DLLEXPORT ENR_getNodeAttribute(ENR_Handle p_handle, int periodIndex,
-        ENR_NodeAttribute t_enum, float** float_out, int* int_dim);
+    ENR_NodeAttribute t_enum, float** float_out, int* int_dim);
 int DLLEXPORT ENR_getLinkAttribute(ENR_Handle p_handle, int periodIndex,
-        ENR_LinkAttribute t_enum, float** float_out, int* int_dim);
+    ENR_LinkAttribute t_enum, float** float_out, int* int_dim);
+        
+int DLLEXPORT ENR_getNodeResult(ENR_Handle p_handle_in, int periodIndex, 
+    int nodeIndex, float** float_out, int* int_dim);
+int DLLEXPORT ENR_getLinkResult(ENR_Handle p_handle_in, int periodIndex, 
+    int linkIndex, float** float_out, int* int_dim);
+                
 %exception;        
 
 /* NO EXCEPTION HANDLING FOR THESE FUNCTIONS */        
 int DLLEXPORT ENR_init(ENR_Handle* p_handle_out);        
-int DLLEXPORT ENR_close(ENR_Handle* p_handle_out);
+int DLLEXPORT ENR_close(ENR_Handle* p_handle_inout);
 void DLLEXPORT ENR_free(void** array);
 
 void DLLEXPORT ENR_clearError(ENR_Handle p_handle);
