@@ -123,9 +123,9 @@ class OutputMetadata():
         
         # Determine unit system from flow setting
         if self._flow.value <= oapi.FlowUnits.AFD.value:
-            self.unit_labels = type(self)._unit_labels_us_
+            self._unit_labels = type(self)._unit_labels_us_
         else:
-            self.unit_labels = type(self)._unit_labels_si_    
+            self._unit_labels = type(self)._unit_labels_si_    
         
         # Determine mass units from quality settings
         if self._qual == oapi.QualUnits.MGL:
@@ -137,25 +137,25 @@ class OutputMetadata():
 
 
         self._metadata = {
-            oapi.NodeAttribute.DEMAND:      ("Demand",          self.unit_labels[self._flow]),
-            oapi.NodeAttribute.HEAD:        ("Head",            self.unit_labels[Units.HYD_HEAD]),
-            oapi.NodeAttribute.PRESSURE:    ("Pressure",        self.unit_labels[self._press]),
-            oapi.NodeAttribute.QUALITY:     ("Quality",         self.unit_labels[self._qual]),
+            oapi.NodeAttribute.DEMAND:      ("Demand",          self._unit_labels[self._flow]),
+            oapi.NodeAttribute.HEAD:        ("Head",            self._unit_labels[Units.HYD_HEAD]),
+            oapi.NodeAttribute.PRESSURE:    ("Pressure",        self._unit_labels[self._press]),
+            oapi.NodeAttribute.QUALITY:     ("Quality",         self._unit_labels[self._qual]),
          
-            oapi.LinkAttribute.FLOW:        ("Flow",            self.unit_labels[self._flow]),
-            oapi.LinkAttribute.VELOCITY:    ("Velocity",        self.unit_labels[Units.VELOCITY]),
-            oapi.LinkAttribute.HEADLOSS:    ("Unit Headloss",   self.unit_labels[Units.HEADLOSS]),
-            oapi.LinkAttribute.AVG_QUALITY: ("Quality",         self.unit_labels[self._qual]),
-            oapi.LinkAttribute.STATUS:      ("Status",          self.unit_labels[Units.NONE]),
-            oapi.LinkAttribute.SETTING:     ("Setting",         self.unit_labels[Units.NONE]),
-            oapi.LinkAttribute.RX_RATE:     ("Reaction Rate",   self.unit_labels[self._rx_rate]),
-            oapi.LinkAttribute.FRCTN_FCTR:  ("Friction Factor", self.unit_labels[Units.UNITLESS])
+            oapi.LinkAttribute.FLOW:        ("Flow",            self._unit_labels[self._flow]),
+            oapi.LinkAttribute.VELOCITY:    ("Velocity",        self._unit_labels[Units.VELOCITY]),
+            oapi.LinkAttribute.HEADLOSS:    ("Unit Headloss",   self._unit_labels[Units.HEADLOSS]),
+            oapi.LinkAttribute.AVG_QUALITY: ("Quality",         self._unit_labels[self._qual]),
+            oapi.LinkAttribute.STATUS:      ("Status",          self._unit_labels[Units.NONE]),
+            oapi.LinkAttribute.SETTING:     ("Setting",         self._unit_labels[Units.NONE]),
+            oapi.LinkAttribute.RX_RATE:     ("Reaction Rate",   self._unit_labels[self._rx_rate]),
+            oapi.LinkAttribute.FRCTN_FCTR:  ("Friction Factor", self._unit_labels[Units.UNITLESS])
         }
 
         
     def get_attribute_metadata(self, attribute):
         '''
-        Takes an attribute enum and returns the name and units in a tuple.
+        Takes an attribute enum and returns a tuple with name and units.
         '''
         return self._metadata[attribute]
 

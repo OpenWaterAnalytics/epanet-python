@@ -38,6 +38,6 @@ setup(
     package_data = {'epanet.output':['*epanet-output.dll', '*epanet-output.so']}, 
  
     install_requires = [
-        'enum34'
+        'aenum'
     ]
 )
