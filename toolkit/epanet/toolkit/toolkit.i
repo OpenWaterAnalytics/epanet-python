@@ -208,7 +208,7 @@ and return a (possibly) different pointer */
 
 
 /* RENAME FUNCTIONS PYTHON STYLE */
-%rename("%(undercase)s") "";
+%rename("%(regex:/^\w+_([a-zA-Z]+)/\L\\1/)s") "";
 
 /* GENERATES DOCUMENTATION */
 %feature("autodoc", "2");
@@ -229,10 +229,6 @@ and return a (possibly) different pointer */
 }
 
 /* INSERT EXCEPTION HANDLING FOR THESE FUNCTIONS */
-// RUNNING A COMPLETE CMD LINE STYLE SIMULATION
-int DLLEXPORT EN_epanet(EN_ProjectHandle ph, const char *inpFile, 
-       const char *rptFile, const char *binOutFile, void(*callback) (char *));
-
 // OPENING A CLOSING THE EPANET TOOLKIT SYSTEM
 int DLLEXPORT EN_open(EN_ProjectHandle ph, const char *f1, const char *f2, const char *f3);
 int DLLEXPORT EN_close(EN_ProjectHandle ph);
@@ -306,8 +302,8 @@ int DLLEXPORT EN_setstatusreport(EN_ProjectHandle ph, int code);
 %exception;
 
 /* NO EXCEPTION HANDLING FOR THESE FUNCTIONS */    
-int DLLEXPORT EN_alloc(EN_ProjectHandle *ph_out);
-int DLLEXPORT EN_free(EN_ProjectHandle *ph_inout);
+int DLLEXPORT EN_createproject(EN_ProjectHandle *ph_out);
+int DLLEXPORT EN_deleteproject(EN_ProjectHandle *ph_inout);
 
 int DLLEXPORT EN_getversion(int *version);
 

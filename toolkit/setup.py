@@ -23,19 +23,16 @@ setup(
     version = "0.0.1",
     ext_modules = [
         Extension("epanet.toolkit._toolkit",
-            include_dirs = ['epanet/toolkit/'],
+            include_dirs = ['epanet/toolkit'],
             libraries = ['epanet'],
             library_dirs = ['epanet/toolkit'],
             sources = ['epanet/toolkit/toolkit.i'],
-            swig_opts=['-py3'],
+            swig_opts = ['-py3'], 
             language = 'C'
         )
     ],
     packages = {'epanet.toolkit'},  
     py_modules = ['toolkit'],
     package_data = {'epanet.toolkit':['*epanet.dll', '*epanet.so']}, 
-      
-    install_requires = [
-        'enum34'
-    ]
+
 )
