@@ -23,11 +23,12 @@ setup(
     version = "0.0.1",
     ext_modules = [
         Extension("epanet.toolkit._toolkit",
-            include_dirs = ['epanet/toolkit'],
-            libraries = ['epanet'],
-            library_dirs = ['epanet/toolkit'],
             sources = ['epanet/toolkit/toolkit.i'],
             swig_opts = ['-py3'], 
+            include_dirs = ['epanet/toolkit'],
+            library_dirs = ['epanet/toolkit'],
+            libraries = ['epanet'],
+            extra_compile_args = ["/D WITH_GENX"],
             language = 'C'
         )
     ],
