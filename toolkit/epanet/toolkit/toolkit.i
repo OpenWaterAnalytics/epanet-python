@@ -296,6 +296,7 @@ int DLLEXPORT EN_close(EN_ProjectHandle ph);
 
 // RETREIVING INFORMATION ABOUT NETWORK NODES
 int DLLEXPORT EN_getnodeindex(EN_ProjectHandle ph, char *id, int *int_out);
+//int DLLEXPORT EN_getnodeid(EN_ProjectHandle ph, int index, char *id);
 int DLLEXPORT EN_getnodename(EN_ProjectHandle ph, int index, char **string_out, int *slen);
 int DLLEXPORT EN_getnodetype(EN_ProjectHandle ph, int index, int *int_out);
 int DLLEXPORT EN_getnodevalue(EN_ProjectHandle ph, int index, EN_NodeProperty code, float *float_out);
