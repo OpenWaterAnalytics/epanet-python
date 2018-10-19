@@ -10,7 +10,8 @@
 
 import pytest
 
-from epanet.toolkit import toolkit as entk
+#from epanet.toolkit 
+import toolkit as entk
 
 from data import INPUT_FILE_NET_1, REPORT_FILE_TEST, OUTPUT_FILE_TEST
 
@@ -49,8 +50,27 @@ def handle(request):
     return _handle    
 
 
-def test_hyd_step(handle):
-     
+def test_getnodeindex(handle):
+    index = entk.getnodeindex(handle, "13")
+    assert index == 4
+    
+
+def test_getnodename(handle):
+    id = entk.getnodename(handle, 4)
+    assert id == "13"
+    
+
+def test_getnodetype(handle):
+    type = entk.getnodetype(handle, 4)
+    assert type == entk.NodeType.JUNCTION.value
+    
+    
+def test_getnodevalue(handle):
+    value = entk.getnodevalue(handle, 4, entk.NodeProperty.ELEVATION)
+    assert value == 695.
+    
+        
+def test_hyd_step(handle): 
      entk.openh(handle)
      
      entk.inith(handle, entk.SaveOptions.NOSAVE)

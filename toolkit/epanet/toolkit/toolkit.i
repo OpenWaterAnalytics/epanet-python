@@ -206,6 +206,40 @@ and return a (possibly) different pointer */
     Py_INCREF($result);
 }
 
+
+/* TYPEMAPS FOR FLOAT ARGUMENT AS RETURN VALUE */
+%typemap(in, numinputs=0) float* float_out (float temp) {
+    $1 = &temp;
+}
+%typemap(argout) float* float_out {
+    %append_output(PyFloat_FromDouble((double)*$1));
+}
+
+
+/* TYPEMAP FOR MEMORY MANAGEMENT AND ENCODING OF STRINGS */
+%typemap(in, numinputs=0)char** string_out (char* temp), int* slen (int temp){
+   $1 = &temp;
+}
+%typemap(argout)(char** string_out, int* slen) {
+    if (*$1) {
+        PyObject* o;
+        o = PyUnicode_FromStringAndSize(*$1, *$2);
+        
+        $result = SWIG_Python_AppendOutput($result, o);
+        free(*$1);
+    }
+}
+
+
+/* TYPEMAPS FOR INT ARGUMENT AS RETURN VALUE */
+%typemap(in, numinputs=0) int* int_out (int temp) {
+    $1 = &temp;
+}
+%typemap(argout) int* int_out {
+    %append_output(PyInt_FromLong(*$1));
+}
+
+
 /* TYPEMAPS FOR LONG ARGUMENT AS RETURN VALUE */
 %typemap(in, numinputs=0) long* long_out (long temp) {
     $1 = &temp;
@@ -228,7 +262,7 @@ and return a (possibly) different pointer */
     
     $1 = ($1_type)(val);
 }
-%apply EnumeratedType {EN_SaveOption};
+%apply EnumeratedType {EN_SaveOption, EN_NodeProperty};
 
 
 /* RENAME FUNCTIONS PYTHON STYLE */
@@ -261,10 +295,10 @@ int DLLEXPORT EN_open(EN_ProjectHandle ph, const char *f1, const char *f2, const
 int DLLEXPORT EN_close(EN_ProjectHandle ph);
 
 // RETREIVING INFORMATION ABOUT NETWORK NODES
-int DLLEXPORT EN_getnodeindex(EN_ProjectHandle ph, char *id, int *index);
-int DLLEXPORT EN_getnodeid(EN_ProjectHandle ph, int index, char *id);
-int DLLEXPORT EN_getnodetype(EN_ProjectHandle ph, int index, int *code);
-int DLLEXPORT EN_getnodevalue(EN_ProjectHandle ph, int index, int code, EN_API_FLOAT_TYPE *value);
+int DLLEXPORT EN_getnodeindex(EN_ProjectHandle ph, char *id, int *int_out);
+int DLLEXPORT EN_getnodename(EN_ProjectHandle ph, int index, char **string_out, int *slen);
+int DLLEXPORT EN_getnodetype(EN_ProjectHandle ph, int index, int *int_out);
+int DLLEXPORT EN_getnodevalue(EN_ProjectHandle ph, int index, EN_NodeProperty code, float *float_out);
 
 // RETREIVING INFORMATION ABOUT NETWORK LINKS
 int DLLEXPORT EN_getlinkindex(EN_ProjectHandle ph, char *id, int *index);
@@ -340,12 +374,50 @@ int DLLEXPORT EN_checkError(EN_ProjectHandle ph, char **msg_buffer);
 
 /* CODE ADDED DIRECTLY TO SWIGGED INTERFACE MODULE */
 %pythoncode%{
+
 import enum
 
+class NodeType(enum.Enum):
+    JUNCTION        = EN_JUNCTION
+    RESERVOIR       = EN_RESERVOIR
+    TANK            = EN_TANK
+    
+
+class NodeProperty(enum.Enum):
+    ELEVATION       = EN_ELEVATION
+    BASEDEMAND      = EN_BASEDEMAND
+    PATTERN         = EN_PATTERN
+    EMITTER         = EN_EMITTER
+    INITQUAL        = EN_INITQUAL
+    SOURCEQUAL      = EN_SOURCEQUAL
+    SOURCEPAT       = EN_SOURCEPAT
+    SOURCETYPE      = EN_SOURCETYPE
+    TANKLEVEL       = EN_TANKLEVEL
+    DEMAND          = EN_DEMAND
+    HEAD            = EN_HEAD
+    PRESSURE        = EN_PRESSURE
+    QUALITY         = EN_QUALITY
+    SOURCEMASS      = EN_SOURCEMASS
+    INITVOLUME      = EN_INITVOLUME
+    MIXMODEL        = EN_MIXMODEL
+    MIXZONEVOL      = EN_MIXZONEVOL
+    TANKDIAM        = EN_TANKDIAM
+    MINVOLUME       = EN_MINVOLUME
+    VOLCURVE        = EN_VOLCURVE
+    MINLEVEL        = EN_MINLEVEL
+    MAXLEVEL        = EN_MAXLEVEL
+    MIXFRACTION     = EN_MIXFRACTION
+    TANK_KBULK      = EN_TANK_KBULK
+    TANKVOLUME      = EN_TANKVOLUME
+    MAXVOLUME       = EN_MAXVOLUME
+
+
 class SaveOptions(enum.Enum):
-  NOSAVE        = EN_NOSAVE
-  SAVE          = EN_SAVE
-  INITFLOW      = EN_INITFLOW
-  SAVE_AND_INIT = EN_SAVE_AND_INIT
+    NOSAVE          = EN_NOSAVE
+    SAVE            = EN_SAVE
+    INITFLOW        = EN_INITFLOW
+    SAVE_AND_INIT   = EN_SAVE_AND_INIT
+  
+  
 
 %}
