@@ -158,6 +158,14 @@ typedef enum {
     EN_TRACE       = 3
 } EN_QualityType;
 
+typedef enum {
+  EN_NOSAVE        = 0,
+  EN_SAVE          = 1,
+  EN_INITFLOW      = 10,
+  EN_SAVE_AND_INIT = 11
+} EN_SaveOption;
+
+
 #ifdef WINDOWS
   #ifdef __cplusplus
   #define DLLEXPORT __declspec(dllexport) __cdecl
@@ -207,6 +215,22 @@ and return a (possibly) different pointer */
 }
 
 
+/* TYPEMAP FOR ENUMERATED TYPES */
+%typemap(in) EnumeratedType (int val, int ecode = 0) {
+    if (PyObject_HasAttrString($input,"value")) {
+        PyObject* o;
+        o = PyObject_GetAttrString($input, "value");
+        ecode = SWIG_AsVal_int(o, &val); 
+    }   
+    else {
+        SWIG_exception_fail(SWIG_ArgError(ecode), "in method '" "$symname" "', argument " "$argnum"" of type '" "$ltype""'"); 
+    }   
+    
+    $1 = ($1_type)(val);
+}
+%apply EnumeratedType {EN_SaveOption};
+
+
 /* RENAME FUNCTIONS PYTHON STYLE */
 %rename("%(regex:/^\w+_([a-zA-Z]+)/\L\\1/)s") "";
 
@@ -229,6 +253,9 @@ and return a (possibly) different pointer */
 }
 
 /* INSERT EXCEPTION HANDLING FOR THESE FUNCTIONS */
+// RUNNING AN EPANET SIMULATION
+int DLLEXPORT EN_runproject(EN_ProjectHandle ph, const char *f1, const char *f2, const char *f3, void (*pviewprog)(char *));
+
 // OPENING A CLOSING THE EPANET TOOLKIT SYSTEM
 int DLLEXPORT EN_open(EN_ProjectHandle ph, const char *f1, const char *f2, const char *f3);
 int DLLEXPORT EN_close(EN_ProjectHandle ph);
@@ -277,7 +304,7 @@ int DLLEXPORT EN_usehydfile(EN_ProjectHandle ph, char *filename);
 // RUNNING A HYDRAULIC ANALYSIS
 int DLLEXPORT EN_solveH(EN_ProjectHandle ph);
 int DLLEXPORT EN_openH(EN_ProjectHandle ph);
-int DLLEXPORT EN_initH(EN_ProjectHandle ph, int flag);
+int DLLEXPORT EN_initH(EN_ProjectHandle ph, EN_SaveOption flag);
 int DLLEXPORT EN_runH(EN_ProjectHandle ph, long* long_out);
 int DLLEXPORT EN_nextH(EN_ProjectHandle ph, long* long_out);
 int DLLEXPORT EN_closeH(EN_ProjectHandle ph);
@@ -309,3 +336,16 @@ int DLLEXPORT EN_getversion(int *version);
 
 void DLLEXPORT EN_clearError(EN_ProjectHandle ph);
 int DLLEXPORT EN_checkError(EN_ProjectHandle ph, char **msg_buffer);
+
+
+/* CODE ADDED DIRECTLY TO SWIGGED INTERFACE MODULE */
+%pythoncode%{
+import enum
+
+class SaveOptions(enum.Enum):
+  NOSAVE        = EN_NOSAVE
+  SAVE          = EN_SAVE
+  INITFLOW      = EN_INITFLOW
+  SAVE_AND_INIT = EN_SAVE_AND_INIT
+
+%}
