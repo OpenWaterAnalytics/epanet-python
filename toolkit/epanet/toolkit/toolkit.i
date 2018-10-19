@@ -249,6 +249,24 @@ and return a (possibly) different pointer */
 }
 
 
+/* TYPEMAPS FOR MEMORY MANAGEMNET OF INT ARRAYS */
+%typemap(in, numinputs=0)int** int_out (long* temp), int* int_dim (int temp){
+   $1 = &temp;
+}
+%typemap(argout) (int** int_out, int* int_dim) {
+    if (*$1) {
+      PyObject *o = PyList_New(*$2);
+      int i;
+      long* temp = (long*)*$1;
+      for(i=0; i<*$2; i++) {
+        PyList_SetItem(o, i, PyInt_FromLong(temp[i]));
+      }
+      $result = SWIG_Python_AppendOutput($result, o);
+      free(*$1);
+    }
+}
+
+
 /* TYPEMAP FOR ENUMERATED TYPES */
 %typemap(in) EnumeratedType (int val, int ecode = 0) {
     if (PyObject_HasAttrString($input,"value")) {
@@ -262,7 +280,7 @@ and return a (possibly) different pointer */
     
     $1 = ($1_type)(val);
 }
-%apply EnumeratedType {EN_SaveOption, EN_NodeProperty};
+%apply EnumeratedType {EN_SaveOption, EN_NodeProperty, EN_LinkProperty};
 
 
 /* RENAME FUNCTIONS PYTHON STYLE */
@@ -302,11 +320,13 @@ int DLLEXPORT EN_getnodetype(EN_ProjectHandle ph, int index, int *int_out);
 int DLLEXPORT EN_getnodevalue(EN_ProjectHandle ph, int index, EN_NodeProperty code, float *float_out);
 
 // RETREIVING INFORMATION ABOUT NETWORK LINKS
-int DLLEXPORT EN_getlinkindex(EN_ProjectHandle ph, char *id, int *index);
-int DLLEXPORT EN_getlinkid(EN_ProjectHandle ph, int index, char *id);
-int DLLEXPORT EN_getlinktype(EN_ProjectHandle ph, int index, EN_LinkType *code);
-int DLLEXPORT EN_getlinknodes(EN_ProjectHandle ph, int index, int *node1, int *node2);
-int DLLEXPORT EN_getlinkvalue(EN_ProjectHandle ph, int index, EN_LinkProperty code, EN_API_FLOAT_TYPE *value);
+int DLLEXPORT EN_getlinkindex(EN_ProjectHandle ph, char *id, int *int_out);
+//int DLLEXPORT EN_getlinkid(EN_ProjectHandle ph, int index, char *id);
+int DLLEXPORT EN_getlinkname(EN_ProjectHandle ph, int index, char **string_out, int *slen);
+int DLLEXPORT EN_getlinktype(EN_ProjectHandle ph, int index, int *int_out);
+//int DLLEXPORT EN_getlinknodes(EN_ProjectHandle ph, int index, int *node1, int *node2);
+int DLLEXPORT EN_getlinknodearray(EN_ProjectHandle ph, int index, int **int_out, int *int_dim);
+int DLLEXPORT EN_getlinkvalue(EN_ProjectHandle ph, int index, EN_LinkProperty code, float *float_out);
 
 // RETREIVING INFORMATION ABOUT TIME PATTERNS
 int DLLEXPORT EN_getpatternid(EN_ProjectHandle ph, int index, char *id);
@@ -384,6 +404,18 @@ class NodeType(enum.Enum):
     TANK            = EN_TANK
     
 
+class LinkType(enum.Enum):
+    CVPIPE          = EN_CVPIPE
+    PIPE            = EN_PIPE
+    PUMP            = EN_PUMP
+    PRV             = EN_PRV
+    PSV             = EN_PSV
+    PBV             = EN_PBV
+    FCV             = EN_FCV
+    TCV             = EN_TCV
+    GPV             = EN_GPV
+
+
 class NodeProperty(enum.Enum):
     ELEVATION       = EN_ELEVATION
     BASEDEMAND      = EN_BASEDEMAND
@@ -413,6 +445,29 @@ class NodeProperty(enum.Enum):
     MAXVOLUME       = EN_MAXVOLUME
 
 
+class LinkProperty(enum.Enum):
+    DIAMETER        = EN_DIAMETER
+    LENGTH          = EN_LENGTH
+    ROUGHNESS       = EN_ROUGHNESS
+    MINORLOSS       = EN_MINORLOSS
+    INITIALSTATUS   = EN_INITSTATUS
+    INITIALSETTINT  = EN_INITSETTING
+    KBULK           = EN_KBULK
+    KWALL           = EN_KWALL
+    FLOW            = EN_FLOW
+    VELOCITY        = EN_VELOCITY
+    HEADLOSS        = EN_HEADLOSS
+    STATUS          = EN_STATUS
+    SETTING         = EN_SETTING
+    ENERGY          = EN_ENERGY
+    LINKQUAL        = EN_LINKQUAL
+    LINKPATTERN     = EN_LINKPATTERN
+    EFFICIENCY      = EN_EFFICIENCY
+    HEADCURVE       = EN_HEADCURVE
+    EFFICIENCYCURVE = EN_EFFICIENCYCURVE
+    PRICEPATTERN    = EN_PRICEPATTERN
+    
+    
 class SaveOptions(enum.Enum):
     NOSAVE          = EN_NOSAVE
     SAVE            = EN_SAVE
