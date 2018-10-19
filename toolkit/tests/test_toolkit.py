@@ -69,6 +69,33 @@ def test_getnodevalue(handle):
     value = entk.getnodevalue(handle, 4, entk.NodeProperty.ELEVATION)
     assert value == 695.
     
+
+def test_getlinkindex(handle):
+    index = entk.getlinkindex(handle, "31")
+    assert index == 6
+    
+            
+def test_getlinkname(handle):
+    id = entk.getlinkname(handle, 6)
+    assert id == "31"
+
+
+def test_getlinktype(handle):
+    type = entk.getlinktype(handle, 6)
+    assert type == entk.LinkType.PIPE.value    
+
+
+# def test_getlinknodearray(handle):
+#     nodes = entk.getlinknodearray(handle, 6)
+#     assert len(nodes) == 2
+#     assert node[0] == 10
+#     assert node[1] == 11
+    
+
+def test_getlinkvalue(handle):
+    value = entk.getlinkvalue(handle, 6, entk.LinkProperty.DIAMETER)
+    assert value == 6.0
+    
         
 def test_hyd_step(handle): 
      entk.openh(handle)
