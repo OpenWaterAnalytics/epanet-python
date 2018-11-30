@@ -55,3 +55,22 @@ docs/_build/
 
 # PyBuilder
 target/
+
+# Eclipse
+.settings/
+.project
+.pydevproject
+
+# Testing
+.pytest_cache/
+
+# Wrapped libraries
+*.h
+*.dll
+*.lib
+
+# SWIG wrappers
+output.py
+output_wrap.c
+toolkit.py
+toolkit_wrap.c
