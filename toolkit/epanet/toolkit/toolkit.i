@@ -29,8 +29,6 @@ typedef void *Handle;
 
 %include "epanet2_enums.h"
 
-#define DLLEXPORT
-
 
 /* TYPEMAPS FOR OPAQUE POINTER */
 /* Used for functions that output a new opaque pointer */
@@ -112,8 +110,7 @@ and return a (possibly) different pointer */
     
     $1 = ($1_type)(val);
 }
-%apply EnumeratedType {EN_FlowUnits, EN_HeadLossType, EN_SaveOption, EN_StatusReport};
-
+%apply EnumeratedType {EN_FlowUnits, EN_HeadLossType, EN_SaveOption, EN_StatusReport, EN_TimeProperty, EN_QualityType};
 
 
 /* GENERATES DOCUMENTATION */
@@ -139,60 +136,70 @@ and return a (possibly) different pointer */
 
 /* INSERT EXCEPTION HANDLING FOR THESE FUNCTIONS */
 
-int DLLEXPORT proj_run(Handle ph, const char *input_path, const char *report_path, const char *output_path);
-int DLLEXPORT proj_init(Handle ph, const char *rptFile, const char *outFile, EN_FlowUnits unitsType, EN_HeadLossType headLossType);
-int DLLEXPORT proj_open(Handle ph, const char *inpFile, const char *rptFile, const char *binOutFile);
-int DLLEXPORT proj_savefile(Handle ph, const char *filename);
-int DLLEXPORT proj_close(Handle ph);
-int DLLEXPORT proj_getcount(Handle ph, EN_CountType code, int *int_out);
+int proj_run(Handle ph, const char *input_path, const char *report_path, const char *output_path);
+int proj_init(Handle ph, const char *rptFile, const char *outFile, EN_FlowUnits unitsType, EN_HeadLossType headLossType);
+int proj_open(Handle ph, const char *inpFile, const char *rptFile, const char *binOutFile);
+int proj_savefile(Handle ph, const char *filename);
+int proj_close(Handle ph);
 
 
-int DLLEXPORT hyd_solve(Handle ph);
-int DLLEXPORT hyd_save(Handle ph);
-int DLLEXPORT hyd_open(Handle ph);
-int DLLEXPORT hyd_init(Handle ph, EN_SaveOption saveFlag);
-int DLLEXPORT hyd_run(Handle ph, long *long_out);
-int DLLEXPORT hyd_next(Handle ph, long *long_out);
-int DLLEXPORT hyd_close(Handle ph);
-int DLLEXPORT hyd_savefile(Handle ph, char *filename);
-int DLLEXPORT hyd_usefile(Handle ph, char *filename);
+int hyd_solve(Handle ph);
+int hyd_save(Handle ph);
+int hyd_open(Handle ph);
+int hyd_init(Handle ph, EN_SaveOption saveFlag);
+int hyd_run(Handle ph, long *long_out);
+int hyd_next(Handle ph, long *long_out);
+int hyd_close(Handle ph);
+int hyd_savefile(Handle ph, char *filename);
+int hyd_usefile(Handle ph, char *filename);
 
 
-int DLLEXPORT qual_solve(Handle ph);
-int DLLEXPORT qual_open(Handle ph);
-int DLLEXPORT qual_init(Handle ph, EN_SaveOption saveFlag);
-int DLLEXPORT qual_run(Handle ph, long *long_out);
-int DLLEXPORT qual_next(Handle ph, long *long_out);
-int DLLEXPORT qual_step(Handle ph, long *long_out);
-int DLLEXPORT qual_close(Handle ph);
+int qual_solve(Handle ph);
+int qual_open(Handle ph);
+int qual_init(Handle ph, EN_SaveOption saveFlag);
+int qual_run(Handle ph, long *long_out);
+int qual_next(Handle ph, long *long_out);
+int qual_step(Handle ph, long *long_out);
+int qual_close(Handle ph);
 
 
-int DLLEXPORT rpt_writeline(Handle ph, char *line);
-int DLLEXPORT rpt_writeresults(Handle ph);
-int DLLEXPORT rpt_reset(Handle ph);
-int DLLEXPORT rpt_set(Handle ph, char *reportCommand);
-int DLLEXPORT rpt_setlevel(Handle ph, EN_StatusReport code);
-int DLLEXPORT rpt_analysisstats(Handle ph, EN_AnalysisStatistic code, EN_API_FLOAT_TYPE *float_out );
+int rpt_writeline(Handle ph, char *line);
+int rpt_writeresults(Handle ph);
+int rpt_reset(Handle ph);
+int rpt_set(Handle ph, char *reportCommand);
+int rpt_setlevel(Handle ph, EN_StatusReport code);
+int rpt_getcount(Handle ph, EN_CountType code, int *int_out);
+int rpt_anlysstats(Handle ph, EN_AnalysisStatistic code, EN_API_FLOAT_TYPE *float_out );
 
 
-int DLLEXPORT toolkit_getversion(int *int_out);
+int anlys_getoption(Handle ph, EN_Option code, EN_API_FLOAT_TYPE *value);
+int anlys_setoption(Handle ph, EN_Option code, EN_API_FLOAT_TYPE value);
+int anlys_getflowunits(Handle ph, EN_FlowUnits *code);
+int anlys_setflowunits(Handle ph, EN_FlowUnits code);
+int anlys_gettimeparam(Handle ph, EN_TimeProperty code, long *value);
+int anlys_settimeparam(Handle ph, EN_TimeProperty code, long value);
+int anlys_getqualinfo(Handle ph, EN_QualityType *qualcode, char *chemname, char *chemunits, int *tracenode);
+int anlys_getqualtype(Handle ph, EN_QualityType *qualcode, int *tracenode);
+int anlys_setqualtype(Handle ph, EN_QualityType qualcode, char *chemname, char *chemunits, char *tracenode);
+
+
+int toolkit_getversion(int *int_out);
 
 
 %exception;
 
 /* NO EXCEPTION HANDLING FOR THESE FUNCTIONS */    
-int DLLEXPORT proj_create(Handle *ph_out);
-int DLLEXPORT proj_delete(Handle *ph_inout);
-void DLLEXPORT err_clear(Handle ph);
-int DLLEXPORT err_check(Handle ph, char** msg_buffer);
-void DLLEXPORT toolkit_free(void **memory);
+int  proj_create(Handle *ph_out);
+int  proj_delete(Handle *ph_inout);
+void err_clear(Handle ph);
+int  err_check(Handle ph, char** msg_buffer);
+void toolkit_free(void **memory);
 
 
 /* CODE ADDED DIRECTLY TO SWIGGED INTERFACE MODULE */
 %pythoncode%{
 
 import enum
-
 
 class HeadLossType(enum.Enum):
     HW = EN_HW
@@ -229,6 +236,29 @@ class AnalysisStatistic(enum.Enum):
     MAXFLOWCHANGE = EN_MAXFLOWCHANGE
     MASSBALANCE   = EN_MASSBALANCE
     
-    
+class TimeProperty(enum.Enum):
+    DURATION     = EN_DURATION
+    HYDSTEP      = EN_HYDSTEP
+    QUALSTEP     = EN_QUALSTEP
+    PATTERNSTEP  = EN_PATTERNSTEP
+    PATTERNSTART = EN_PATTERNSTART
+    REPORTSTEP   = EN_REPORTSTEP
+    REPORTSTART  = EN_REPORTSTART
+    RULESTEP     = EN_RULESTEP
+    STATISTIC    = EN_STATISTIC
+    PERIODS      = EN_PERIODS
+    STARTTIME    = EN_STARTTIME
+    HTIME        = EN_HTIME
+    QTIME        = EN_QTIME
+    HALTFLAG     = EN_HALTFLAG
+    NEXTEVENT    = EN_NEXTEVENT
+    NEXTEVENTIDX = EN_NEXTEVENTIDX
+
+class QualityType(enum.Enum):
+    NONE  = EN_NONE
+    CHEM  = EN_CHEM
+    AGE   = EN_AGE
+    TRACE = EN_TRACE
+
 
 %}
