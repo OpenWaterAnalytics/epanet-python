@@ -10,82 +10,127 @@
 
 import pytest
 
-import epanet.toolkit.toolkit as entk
+import epanet.toolkit.toolkit as en
 
 from data import INPUT_FILE_NET_1, REPORT_FILE_TEST, OUTPUT_FILE_TEST
 
 
 def test_createdelete():
 
-    _handle = entk.proj_create()
+    _handle = en.proj_create()
     assert(_handle != None)
     
-    _handle = entk.proj_delete(_handle)
+    _handle = en.proj_delete(_handle)
     assert(_handle == None)
     
 
 def test_run():
-    _handle = entk.proj_create()
+    _handle = en.proj_create()
     
-    entk.proj_run(_handle, INPUT_FILE_NET_1, REPORT_FILE_TEST, OUTPUT_FILE_TEST)
+    en.proj_run(_handle, INPUT_FILE_NET_1, REPORT_FILE_TEST, OUTPUT_FILE_TEST)
     
-    entk.proj_delete(_handle)    
+    en.proj_delete(_handle)    
     
 
 def test_openclose():
-    _handle = entk.proj_create()
-    entk.proj_open(_handle, INPUT_FILE_NET_1, REPORT_FILE_TEST, OUTPUT_FILE_TEST)
+    _handle = en.proj_create()
+    en.proj_open(_handle, INPUT_FILE_NET_1, REPORT_FILE_TEST, OUTPUT_FILE_TEST)
     
-    entk.proj_close(_handle)
-    entk.proj_delete(_handle)
+    en.proj_close(_handle)
+    en.proj_delete(_handle)
 
  
 @pytest.fixture()
 def handle(request):    
-    _handle = entk.proj_create()
-    entk.proj_open(_handle, INPUT_FILE_NET_1, REPORT_FILE_TEST, OUTPUT_FILE_TEST)
+    _handle = en.proj_create()
+    en.proj_open(_handle, INPUT_FILE_NET_1, REPORT_FILE_TEST, OUTPUT_FILE_TEST)
      
     def close():
-        entk.proj_close(_handle)
-        entk.proj_delete(_handle)
+        en.proj_close(_handle)
+        en.proj_delete(_handle)
      
     request.addfinalizer(close)    
     return _handle    
  
 
 def test_hyd_step(handle): 
-     entk.hyd_open(handle)
+     en.hydr_open(handle)
       
-     entk.hyd_init(handle, entk.SaveOption.NOSAVE)
+     en.hydr_init(handle, en.SaveOption.NOSAVE)
       
      while True:
-         time = entk.hyd_run(handle)
+         time = en.hydr_run(handle)
           
-         step = entk.hyd_next(handle)
+         step = en.hydr_next(handle)
           
          if time == 0.:
              break
  
-     entk.hyd_close(handle)
+     en.hydr_close(handle)
 
 
 def test_qual_step(handle):
-    entk.hyd_solve(handle)
+    en.hydr_solve(handle)
     
-    entk.qual_open(handle)
+    en.qual_open(handle)
     
-    entk.qual_init(handle, entk.SaveOption.NOSAVE)
+    en.qual_init(handle, en.SaveOption.NOSAVE)
     
     while True:
-        time = entk.qual_run(handle)
+        time = en.qual_run(handle)
         
-        step = entk.qual_next(handle)
+        step = en.qual_next(handle)
         
         if time == 0.:
             break
         
-    entk.qual_close(handle)
+    en.qual_close(handle)
        
+
+def test_report(handle):
+    
+    en.hydr_solve(handle)
+    en.qual_solve(handle)
+    
+    en.rprt_set(handle, "NODES ALL")
+    en.rprt_writeresults(handle)
+    
+
+def test_node(handle):
+    index = en.node_getindex(handle, "10")
+    type = en.node_gettype(handle, index)
+
+
+def test_demand(handle):
+    index = en.node_getindex(handle, "10")
+    count = en.dmnd_getcount(handle, index)
+        
+
+def test_link(handle):
+    index = en.link_getindex(handle, "10")
+    type = en.link_gettype(handle, index)
+    
+
+def test_pump(handle):
+    index = en.link_getindex(handle, "9")
+    link_type = en.link_gettype(handle, index)
+    pump_type = en.pump_gettype(handle, index)
+    
+
+def test_pattern(handle):
+    index = en.ptrn_getindex(handle, "1")
+    length = en.ptrn_getlength(handle, index)
+    
+
+def test_curve(handle):
+    index = en.curv_getindex(handle, "1")
+    length = en.curv_getlength(handle, index)
+    
+        
+#def test_anlys(handle):
+#    
+#    en.anlys_getqualinfo()
+    
 
     
 # def test_getnodeindex(handle):
