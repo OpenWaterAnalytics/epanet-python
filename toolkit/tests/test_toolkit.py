@@ -98,8 +98,10 @@ def test_report(handle):
 
 def test_node(handle):
     index = en.node_getindex(handle, "10")
+    id = en.node_getid(handle, index)
     type = en.node_gettype(handle, index)
-
+    coord = en.node_getcoord(handle, index)
+    
 
 def test_demand(handle):
     index = en.node_getindex(handle, "10")
@@ -108,6 +110,7 @@ def test_demand(handle):
 
 def test_link(handle):
     index = en.link_getindex(handle, "10")
+    id = en.link_getid(handle, index)
     type = en.link_gettype(handle, index)
     
 
