@@ -76,9 +76,12 @@ and return a (possibly) different pointer */
     
     $1 = ($1_type)(val);
 }
-%apply EnumeratedType {EN_FlowUnits, EN_HeadLossType, EN_SaveOption, 
-    EN_StatusReport, EN_TimeProperty, EN_QualityType, EN_NodeType, 
-    EN_NodeProperty};
+%apply EnumeratedType {EN_NodeProperty, EN_LinkProperty, EN_TimeProperty, 
+    EN_AnalysisStatistic, EN_CountType, EN_NodeType, EN_LinkType, EN_QualityType,
+    EN_SourceType, EN_HeadLossType, EN_FlowUnits, EN_DemandModel, EN_Option, 
+    EN_ControlType, EN_StatisticType, EN_MixingModel, EN_SaveOption, EN_PumpType,
+    EN_CurveType, EN_ActionCodeType, EN_RuleObject, EN_RuleVariable, 
+    EN_RuleOperator, EN_RuleStatus, EN_StatusReport};
 
 
 /* MARK FUNCTIONS AS ALLOCATING AND DEALLOCATING MEMORY */ 
