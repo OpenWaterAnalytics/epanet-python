@@ -242,42 +242,61 @@ void toolkit_free(void **memory);
 
 import enum
 
-class HeadLossType(enum.Enum):
-    HW = _toolkit.EN_HW
-    DW = EN_DW
-    CM = EN_CM
+class NodeProperty(enum.Enum):
+    ELEVATION   = EN_ELEVATION
+    BASEDEMAND  = EN_BASEDEMAND
+    PATTERN     = EN_PATTERN
+    EMITTER     = EN_EMITTER
+    INITQUAL    = EN_INITQUAL
+    SOURCEQUAL  = EN_SOURCEQUAL
+    SOURCEPAT   = EN_SOURCEPAT
+    SOURCETYPE  = EN_SOURCETYPE
+    TANKLEVEL   = EN_TANKLEVEL
+    DEMAND      = EN_DEMAND
+    HEAD        = EN_HEAD
+    PRESSURE    = EN_PRESSURE
+    QUALITY     = EN_QUALITY
+    SOURCEMASS  = EN_SOURCEMASS
+    INITVOLUME  = EN_INITVOLUME
+    MIXMODEL    = EN_MIXMODEL
+    MIXZONEVOL  = EN_MIXZONEVOL
+    TANKDIAM    = EN_TANKDIAM
+    MINVOLUME   = EN_MINVOLUME
+    VOLCURVE    = EN_VOLCURVE
+    MINLEVEL    = EN_MINLEVEL
+    MAXLEVEL    = EN_MAXLEVEL
+    MIXFRACTION = EN_MIXFRACTION
+    TANK_KBULK  = EN_TANK_KBULK
+    TANKVOLUME  = EN_TANKVOLUME
+    MAXVOLUME   = EN_MAXVOLUME
 
 
-class FlowUnits(enum.Enum):
-    CFS = EN_CFS
-    GPM = EN_GPM
-    MGD = EN_MGD
-    IMGD = EN_IMGD
-    AFD = EN_AFD
-    LPS = EN_LPS
-    LPM = EN_LPM
-    MLD = EN_MLD
-    CMH = EN_CMH
-    CMD = EN_CMD
+class LinkProperty(enum.Enum):
+    DIAMETER        = EN_DIAMETER
+    LENGTH          = EN_LENGTH
+    ROUGHNESS       = EN_ROUGHNESS
+    MINORLOSS       = EN_MINORLOSS
+    INITSTATUS      = EN_INITSTATUS
+    INITSETTING     = EN_INITSETTING
+    KBULK           = EN_KBULK
+    KWALL           = EN_KWALL
+    FLOW            = EN_FLOW
+    VELOCITY        = EN_VELOCITY
+    HEADLOSS        = EN_HEADLOSS
+    STATUS          = EN_STATUS
+    SETTING         = EN_SETTING
+    ENERGY          = EN_ENERGY
+    LINKQUAL        = EN_LINKQUAL
+    LINKPATTERN     = EN_LINKPATTERN
+    EFFICIENCY      = EN_EFFICIENCY
+    HEADCURVE       = EN_HEADCURVE
+    EFFICIENCYCURVE = EN_EFFICIENCYCURVE
+    PRICEPATTERN    = EN_PRICEPATTERN
+    STATE           = EN_STATE
+    CONST_POWER     = EN_CONST_POWER
+    SPEED           = EN_SPEED
 
-class SaveOption(enum.Enum):
-    NOSAVE        = EN_NOSAVE 
-    SAVE          = EN_SAVE
-    INITFLOW      = EN_INITFLOW
-    SAVE_AND_INIT = EN_SAVE_AND_INIT
 
-class StatusReport(enum.Enum):
-    NONE   = EN_NO_REPORT
-    NORMAL = EN_NORMAL_REPORT
-    FULL   = EN_FULL_REPORT
-  
-class AnalysisStatistic(enum.Enum):
-    ITERATIONS    = EN_ITERATIONS
-    RELERROR      = EN_RELATIVEERROR
-    MAXHEADERROR  = EN_MAXHEADERROR
-    MAXFLOWCHANGE = EN_MAXFLOWCHANGE
-    MASSBALANCE   = EN_MASSBALANCE
-    
 class TimeProperty(enum.Enum):
     DURATION     = EN_DURATION
     HYDSTEP      = EN_HYDSTEP
@@ -296,45 +315,186 @@ class TimeProperty(enum.Enum):
     NEXTEVENT    = EN_NEXTEVENT
     NEXTEVENTIDX = EN_NEXTEVENTIDX
 
-class QualityType(enum.Enum):
-    NONE  = EN_NONE
-    CHEM  = EN_CHEM
-    AGE   = EN_AGE
-    TRACE = EN_TRACE
+
+class AnalysisStatistic(enum.Enum):
+    ITERATIONS    = EN_ITERATIONS
+    RELATIVEERROR = EN_RELATIVEERROR
+    MAXHEADERROR  = EN_MAXHEADERROR
+    MAXFLOWCHANGE = EN_MAXFLOWCHANGE
+    MASSBALANCE   = EN_MASSBALANCE
+  
+
+class CountType(enum.Enum):
+    NODECOUNT    = EN_NODECOUNT
+    TANKCOUNT    = EN_TANKCOUNT
+    LINKCOUNT    = EN_LINKCOUNT
+    PATCOUNT     = EN_PATCOUNT
+    CURVECOUNT   = EN_CURVECOUNT
+    CONTROLCOUNT = EN_CONTROLCOUNT
+    RULECOUNT    = EN_RULECOUNT
+
 
 class NodeType(enum.Enum):
-    JUNCTION = EN_JUNCTION
-    RESERVOIR = EN_RESERVOIR
-    TANK = EN_TANK
-
-class NodeProperty(enum.Enum):
-    ELEVATION = EN_ELEVATION
-    BASEDEMAND = EN_BASEDEMAND
-    PATTERN = EN_PATTERN
-    EMITTER = EN_EMITTER
-    INITQUAL = EN_INITQUAL
-    SOURCEQUAL = EN_SOURCEQUAL
-    SOURCEPAT = EN_SOURCEPAT
-    SOURCETYPE = EN_SOURCETYPE
-    TANKLEVEL = EN_TANKLEVEL
-    DEMAND = EN_DEMAND
-    HEAD = EN_HEAD
-    PRESSURE = EN_PRESSURE
-    QUALITY  = EN_QUALITY
-    SOURCEMASS = EN_SOURCEMASS
-    INITVOLUME = EN_INITVOLUME
-    MIXMODEL = EN_MIXMODEL
-    MIXZONEVOL = EN_MIXZONEVOL
-    TANKDIAM = EN_TANKDIAM
-    MINVOLUME = EN_MINVOLUME
-    VOLCURVE = EN_VOLCURVE
-    MINLEVEL = EN_MINLEVEL
-    MAXLEVEL = EN_MAXLEVEL
-    MIXFRACTION = EN_MIXFRACTION
-    TANK_KBULK = EN_TANK_KBULK
-    TANKVOLUME = EN_TANKVOLUME
-    MAXVOLUME = EN_MAXVOLUME
+    JUNCTION    = EN_JUNCTION
+    RESERVOIR   = EN_RESERVOIR
+    TANK        = EN_TANK
 
 
+class LinkType(enum.Enum):
+    CVPIPE       = EN_CVPIPE
+    PIPE         = EN_PIPE
+    PUMP         = EN_PUMP
+    PRV          = EN_PRV
+    PSV          = EN_PSV
+    PBV          = EN_PBV
+    FCV          = EN_FCV
+    TCV          = EN_TCV
+    GPV          = EN_GPV
+
+
+class QualityType(enum.Enum):
+    NONE        = EN_NONE
+    CHEM        = EN_CHEM
+    AGE         = EN_AGE
+    TRACE       = EN_TRACE
+
+
+class SourceType(enum.Enum):
+    CONCEN      = EN_CONCEN
+    MASS        = EN_MASS
+    SETPOINT    = EN_SETPOINT
+    FLOWPACED   = EN_FLOWPACED
+
+
+class HeadLossType(enum.Enum):
+    HW          = EN_HW
+    DW          = EN_DW
+    CM          = EN_CM
+
+
+class FlowUnits(enum.Enum):
+    CFS         = EN_CFS
+    GPM         = EN_GPM
+    MGD         = EN_MGD
+    IMGD        = EN_IMGD
+    AFD         = EN_AFD
+    LPS         = EN_LPS
+    LPM         = EN_LPM
+    MLD         = EN_MLD
+    CMH         = EN_CMH
+    CMD         = EN_CMD
+
+
+class DemandModel(enum.Enum):
+    DDA         = EN_DDA
+    PDA         = EN_PDA
+
+
+class Option(enum.Enum):
+    TRIALS       = EN_TRIALS
+    ACCURACY     = EN_ACCURACY
+    TOLERANCE    = EN_TOLERANCE
+    EMITEXPON    = EN_EMITEXPON
+    DEMANDMULT   = EN_DEMANDMULT
+    HEADERROR    = EN_HEADERROR
+    FLOWCHANGE   = EN_FLOWCHANGE
+    DEMANDDEFPAT = EN_DEMANDDEFPAT
+    HEADLOSSFORM = EN_HEADLOSSFORM
+
+
+class ControlType(enum.Enum):
+    LOWLEVEL    = EN_LOWLEVEL
+    HILEVEL     = EN_HILEVEL
+    TIMER       = EN_TIMER
+    TIMEOFDAY   = EN_TIMEOFDAY
+
+
+class StatisticType(enum.Enum):
+    AVERAGE     = EN_AVERAGE
+    MINIMUM     = EN_MINIMUM
+    MAXIMUM     = EN_MAXIMUM
+    RANGE       = EN_RANGE
+
+
+class MixingModel(enum.Enum):
+    MIX1        = EN_MIX1
+    MIX2        = EN_MIX2
+    FIFO        = EN_FIFO
+    LIFO        = EN_LIFO
+
+
+
+class SaveOption(enum.Enum):
+    NOSAVE        = EN_NOSAVE
+    SAVE          = EN_SAVE
+    INITFLOW      = EN_INITFLOW
+    SAVE_AND_INIT = EN_SAVE_AND_INIT
+
+
+class PumpType(enum.Enum):
+    CONST_HP    = EN_CONST_HP
+    POWER_FUNC  = EN_POWER_FUNC
+    CUSTOM      = EN_CUSTOM
+    NOCURVE     = EN_NOCURVE
+
+
+class CurveType(enum.Enum):
+    VOL         = EN_V_CURVE
+    CHAR        = EN_P_CURVE
+    EFF         = EN_E_CURVE
+    HL          = EN_H_CURVE
+    GEN         = EN_G_CURVE
+
+
+class ActionCode(enum.Enum):
+    UNCOND      = EN_UNCONDITIONAL
+    COND        = EN_CONDITIONAL
+
+
+class RuleObject(enum.Enum):
+    R_NODE      = EN_R_NODE 
+    R_LINK      = EN_R_LINK
+    R_SYSTEM    = EN_R_SYSTEM
+
+
+class RuleVariable(enum.Enum):
+    R_DEMAND    = EN_R_DEMAND
+    R_HEAD      = EN_R_HEAD
+    R_GRADE     = EN_R_GRADE
+    R_LEVEL     = EN_R_LEVEL
+    R_PRESSURE  = EN_R_PRESSURE
+    R_FLOW      = EN_R_FLOW
+    R_STATUS    = EN_R_STATUS
+    R_SETTING   = EN_R_SETTING 
+    R_POWER     = EN_R_POWER
+    R_TIME      = EN_R_TIME 
+    R_CLOCKTIME = EN_R_CLOCKTIME
+    R_FILLTIME  = EN_R_FILLTIME
+    R_DRAINTIME = EN_R_DRAINTIME
+
+
+class RuleOperator(enum.Enum):
+    R_EQ        = EN_R_EQ
+    R_NE        = EN_R_NE
+    R_LE        = EN_R_LE
+    R_GE        = EN_R_GE
+    R_LT        = EN_R_LT 
+    R_GT        = EN_R_GT
+    R_IS        = EN_R_IS
+    R_NOT       = EN_R_NOT
+    R_BELOW     = EN_R_BELOW
+    R_ABOVE     = EN_R_ABOVE
+
+
+class RuleStatus(enum.Enum):
+    R_IS_OPEN   = EN_R_IS_OPEN
+    R_IS_CLOSED = EN_R_IS_CLOSED
+    R_IS_ACTIVE = EN_R_IS_ACTIVE
+
+
+class StatusReport(enum.Enum):
+    NO_REPORT     = EN_NO_REPORT
+    NORMAL_REPORT = EN_NORMAL_REPORT
+    FULL_REPORT   = EN_FULL_REPORT
 
 %}
