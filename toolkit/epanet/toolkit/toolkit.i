@@ -328,13 +328,13 @@ class AnalysisStatistic(enum.Enum):
   
 
 class CountType(enum.Enum):
-    NODECOUNT    = EN_NODECOUNT
-    TANKCOUNT    = EN_TANKCOUNT
-    LINKCOUNT    = EN_LINKCOUNT
-    PATCOUNT     = EN_PATCOUNT
-    CURVECOUNT   = EN_CURVECOUNT
-    CONTROLCOUNT = EN_CONTROLCOUNT
-    RULECOUNT    = EN_RULECOUNT
+    NODES         = EN_NODECOUNT
+    TANKS         = EN_TANKCOUNT
+    LINKS         = EN_LINKCOUNT
+    PTRNS         = EN_PATCOUNT
+    CURVS         = EN_CURVECOUNT
+    CTRLS         = EN_CONTROLCOUNT
+    RULES         = EN_RULECOUNT
 
 
 class NodeType(enum.Enum):

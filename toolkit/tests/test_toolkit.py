@@ -89,6 +89,7 @@ def test_qual_step(handle):
 
 def test_report(handle):
     
+    nlinks = en.rprt_getcount(handle, en.CountType.LINKS)
     en.hydr_solve(handle)
     en.qual_solve(handle)
     
