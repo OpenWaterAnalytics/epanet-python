@@ -1,22 +1,22 @@
 /*
  *  epanet_toolkit.i - SWIG interface description file for EPANET toolkit
- * 
+ *
  *  Created:    11/27/2017
  *  Author:     Michael E. Tryby
  *              US EPA - ORD/NRMRL
- *  
- *  Build command: 
+ *
+ *  Build command:
  *    $ swig -I../include -python -py3 epanet_toolkit.i
  *
-*/ 
+*/
 
 %module(package="epanet") toolkit
 
 
 %include "typemaps.i"
 %include "cstring.i"
-              
-              
+
+
 %{
 #include "epanet_py.h"
 
@@ -47,7 +47,7 @@ and return a (possibly) different pointer */
 %typemap(argout) Handle *ph_out, Handle *ph_inout {
  /* OUTPUT argout */
     %append_output(SWIG_NewPointerObj(SWIG_as_voidptr(retval$argnum), $1_descriptor, 0));
-} 
+}
 %typemap(in) Handle *ph_inout (Handle retval) {
    /* INOUT in */
    SWIG_ConvertPtr(obj0,SWIG_as_voidptrptr(&retval), 0, 0);
@@ -68,23 +68,23 @@ and return a (possibly) different pointer */
     if (PyObject_HasAttrString($input,"value")) {
         PyObject* o;
         o = PyObject_GetAttrString($input, "value");
-        ecode = SWIG_AsVal_int(o, &val); 
-    }   
+        ecode = SWIG_AsVal_int(o, &val);
+    }
     else {
-        SWIG_exception_fail(SWIG_ArgError(ecode), "in method '" "$symname" "', argument " "$argnum"" of type '" "$ltype""'"); 
-    }   
-    
+        SWIG_exception_fail(SWIG_ArgError(ecode), "in method '" "$symname" "', argument " "$argnum"" of type '" "$ltype""'");
+    }
+
     $1 = ($1_type)(val);
 }
-%apply EnumeratedType {EN_NodeProperty, EN_LinkProperty, EN_TimeProperty, 
+%apply EnumeratedType {EN_NodeProperty, EN_LinkProperty, EN_TimeProperty,
     EN_AnalysisStatistic, EN_CountType, EN_NodeType, EN_LinkType, EN_QualityType,
-    EN_SourceType, EN_HeadLossType, EN_FlowUnits, EN_DemandModel, EN_Option, 
+    EN_SourceType, EN_HeadLossType, EN_FlowUnits, EN_DemandModel, EN_Option,
     EN_ControlType, EN_StatisticType, EN_MixingModel, EN_SaveOption, EN_PumpType,
-    EN_CurveType, EN_ActionCodeType, EN_RuleObject, EN_RuleVariable, 
+    EN_CurveType, EN_ActionCodeType, EN_RuleObject, EN_RuleVariable,
     EN_RuleOperator, EN_RuleStatus, EN_StatusReport};
 
 
-/* MARK FUNCTIONS AS ALLOCATING AND DEALLOCATING MEMORY */ 
+/* MARK FUNCTIONS AS ALLOCATING AND DEALLOCATING MEMORY */
 %newobject proj_create;
 %delobject proj_delete;
 
@@ -95,15 +95,16 @@ and return a (possibly) different pointer */
 
 /* MACRO FOR RETURNING A BOUNDED LENGTH STRING */
 %cstring_bounded_output(char *id_out, EN_MAXID);
+%cstring_bounded_output(char *msg_out, EN_MAXMSG);
 
 
 /* INSERTS CUSTOM EXCEPTION HANDLING IN WRAPPER */
 %exception
 {
     char* err_msg;
-    
+
     err_clear(arg1);
-    
+
     $function
     if (err_check(arg1, &err_msg))
     {
@@ -158,8 +159,8 @@ int anlys_getflowunits(Handle ph, int *OUTPUT);
 int anlys_setflowunits(Handle ph, EN_FlowUnits code);
 int anlys_gettimeparam(Handle ph, EN_TimeProperty code, long *OUTPUT);
 int anlys_settimeparam(Handle ph, EN_TimeProperty code, long value);
-int anlys_getqualinfo(Handle ph, EN_QualityType *qualcode, char *chemname, char *chemunits, int *tracenode);
-int anlys_getqualtype(Handle ph, EN_QualityType *qualcode, int *tracenode);
+int anlys_getqualinfo(Handle ph, int *OUTPUT, char *id_out, char *id_out, int *OUTPUT);
+int anlys_getqualtype(Handle ph, int *OUTPUT, int *OUTPUT);
 int anlys_setqualtype(Handle ph, EN_QualityType qualcode, char *chemname, char *chemunits, char *tracenode);
 
 
@@ -175,14 +176,14 @@ int node_getcoord(Handle ph, int index, EN_API_FLOAT_TYPE *OUTPUT, EN_API_FLOAT_
 int node_setcoord(Handle ph, int index, EN_API_FLOAT_TYPE x, EN_API_FLOAT_TYPE y);
 
 
-int dmnd_getmodel(Handle ph, int *type, EN_API_FLOAT_TYPE *pmin, EN_API_FLOAT_TYPE *preq, EN_API_FLOAT_TYPE *pexp);
+int dmnd_getmodel(Handle ph, int *OUTPUT, EN_API_FLOAT_TYPE *OUTPUT, EN_API_FLOAT_TYPE *OUTPUT, EN_API_FLOAT_TYPE *OUTPUT);
 int dmnd_setmodel(Handle ph, int type, EN_API_FLOAT_TYPE pmin, EN_API_FLOAT_TYPE preq, EN_API_FLOAT_TYPE pexp);
 int dmnd_getcount(Handle ph, int nodeIndex, int *OUTPUT);
 int dmnd_getbase(Handle ph, int nodeIndex, int demandIndex, EN_API_FLOAT_TYPE *OUTPUT);
 int dmnd_setbase(Handle ph, int nodeIndex, int demandIndex, EN_API_FLOAT_TYPE baseDemand);
 int dmnd_getpattern(Handle ph, int nodeIndex, int demandIndex, int *OUTPUT);
 int dmnd_setpattern(Handle ph, int nodeIndex, int demandIndex, int patIndex);
-int dmnd_getname(Handle ph, int nodeIndex, int demandIdx, char *demandName);
+int dmnd_getname(Handle ph, int nodeIndex, int demandIdx, char *msg_out);
 int dmnd_setname(Handle ph, int nodeIndex, int demandIdx, char *demandName);
 
 
@@ -225,12 +226,34 @@ int curv_get(Handle ph, int curveIndex, char* id, int *nValues, EN_API_FLOAT_TYP
 int curv_set(Handle ph, int index, EN_API_FLOAT_TYPE *x, EN_API_FLOAT_TYPE *y, int len);
 
 
+int scntl_add(Handle ph, int *cindex, int ctype, int lindex, EN_API_FLOAT_TYPE setting, int nindex, EN_API_FLOAT_TYPE level);
+int scntl_delete(Handle ph, int index);
+int scntl_get(Handle ph, int controlIndex, int *controlType, int *linkIndex, EN_API_FLOAT_TYPE *setting, int *nodeIndex, EN_API_FLOAT_TYPE *level);
+int scntl_set(Handle ph, int cindex, int ctype, int lindex, EN_API_FLOAT_TYPE setting, int nindex, EN_API_FLOAT_TYPE level);
+
+
+int rcntl_add(Handle ph, char *rule);
+int rcntl_delete(Handle ph, int index);
+int rcntl_get(Handle ph, int index, int *nPremises, int *nThenActions, int *nElseActions, EN_API_FLOAT_TYPE *priority);
+int rcntl_getid(Handle ph, int index, char* id);
+int rcntl_getpremise(Handle ph, int ruleIndex, int premiseIndex, int *logop, int *object, int *objIndex, int *variable, int *relop, int *status, EN_API_FLOAT_TYPE *value);
+int rcntl_setpremise(Handle ph, int ruleIndex, int premiseIndex, int logop, int object, int objIndex, int variable, int relop, int status, EN_API_FLOAT_TYPE value);
+int rcntl_setpremiseindex(Handle ph, int ruleIndex, int premiseIndex, int objIndex);
+int rcntl_setpremisestatus(Handle ph, int ruleIndex, int premiseIndex, int status);
+int rcntl_setpremisevalue(Handle ph, int ruleIndex, int premiseIndex, EN_API_FLOAT_TYPE value);
+int rcntl_getthenaction(Handle ph, int ruleIndex, int actionIndex, int *linkIndex, int *status, EN_API_FLOAT_TYPE *setting);
+int rcntl_setthenaction(Handle ph, int ruleIndex, int actionIndex, int linkIndex, int status, EN_API_FLOAT_TYPE setting);
+int rcntl_getelseaction(Handle ph, int ruleIndex, int actionIndex, int *linkIndex, int *status, EN_API_FLOAT_TYPE *setting);
+int rcntl_setelseaction(Handle ph, int ruleIndex, int actionIndex, int linkIndex, int status, EN_API_FLOAT_TYPE setting);
+int rcntl_setrulepriority(Handle ph, int index, EN_API_FLOAT_TYPE priority);
+
+
 int toolkit_getversion(int *int_out);
 
 
 %exception;
 
-/* NO EXCEPTION HANDLING FOR THESE FUNCTIONS */    
+/* NO EXCEPTION HANDLING FOR THESE FUNCTIONS */
 
 int  proj_create(Handle *ph_out);
 int  proj_delete(Handle *ph_inout);
@@ -325,7 +348,7 @@ class AnalysisStatistic(enum.Enum):
     MAXHEADERROR  = EN_MAXHEADERROR
     MAXFLOWCHANGE = EN_MAXFLOWCHANGE
     MASSBALANCE   = EN_MASSBALANCE
-  
+
 
 class CountType(enum.Enum):
     NODES         = EN_NODECOUNT
@@ -333,7 +356,7 @@ class CountType(enum.Enum):
     LINKS         = EN_LINKCOUNT
     PTRNS         = EN_PATCOUNT
     CURVS         = EN_CURVECOUNT
-    CTRLS         = EN_CONTROLCOUNT
+    CNTLS         = EN_CONTROLCOUNT
     RULES         = EN_RULECOUNT
 
 
@@ -455,7 +478,7 @@ class ActionCode(enum.Enum):
 
 
 class RuleObject(enum.Enum):
-    R_NODE      = EN_R_NODE 
+    R_NODE      = EN_R_NODE
     R_LINK      = EN_R_LINK
     R_SYSTEM    = EN_R_SYSTEM
 
@@ -468,9 +491,9 @@ class RuleVariable(enum.Enum):
     R_PRESSURE  = EN_R_PRESSURE
     R_FLOW      = EN_R_FLOW
     R_STATUS    = EN_R_STATUS
-    R_SETTING   = EN_R_SETTING 
+    R_SETTING   = EN_R_SETTING
     R_POWER     = EN_R_POWER
-    R_TIME      = EN_R_TIME 
+    R_TIME      = EN_R_TIME
     R_CLOCKTIME = EN_R_CLOCKTIME
     R_FILLTIME  = EN_R_FILLTIME
     R_DRAINTIME = EN_R_DRAINTIME
@@ -481,7 +504,7 @@ class RuleOperator(enum.Enum):
     R_NE        = EN_R_NE
     R_LE        = EN_R_LE
     R_GE        = EN_R_GE
-    R_LT        = EN_R_LT 
+    R_LT        = EN_R_LT
     R_GT        = EN_R_GT
     R_IS        = EN_R_IS
     R_NOT       = EN_R_NOT
