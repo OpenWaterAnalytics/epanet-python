@@ -228,7 +228,7 @@ int curv_set(Handle ph, int index, EN_API_FLOAT_TYPE *x, EN_API_FLOAT_TYPE *y, i
 
 int scntl_add(Handle ph, int *cindex, int ctype, int lindex, EN_API_FLOAT_TYPE setting, int nindex, EN_API_FLOAT_TYPE level);
 int scntl_delete(Handle ph, int index);
-int scntl_get(Handle ph, int controlIndex, int *controlType, int *linkIndex, EN_API_FLOAT_TYPE *setting, int *nodeIndex, EN_API_FLOAT_TYPE *level);
+int scntl_get(Handle ph, int controlIndex, int *OUTPUT, int *OUTPUT, EN_API_FLOAT_TYPE *OUTPUT, int *OUTPUT, EN_API_FLOAT_TYPE *OUTPUT);
 int scntl_set(Handle ph, int cindex, int ctype, int lindex, EN_API_FLOAT_TYPE setting, int nindex, EN_API_FLOAT_TYPE level);
 
 

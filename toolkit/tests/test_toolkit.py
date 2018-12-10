@@ -225,4 +225,23 @@ def test_pattern(handle):
 
 def test_curve(handle):
     index = en.curv_getindex(handle, "1")
+    assert index == 1
+
     length = en.curv_getlength(handle, index)
+    assert length == 1
+
+    type = en.curv_gettype(handle, index)
+    assert en.CurveType(type) == en.CurveType.CHAR
+
+    value = en.curv_getvalue(handle, index, length)
+    assert value == [1500.0, 250.0]
+
+
+def test_simplecontrol(handle):
+
+    value = en.scntl_get(handle, 1)
+    assert value == [0, 13, 1.0, 11, 110.0]
+
+    value.clear()
+    value = en.scntl_get(handle, 2)
+    assert value == [1, 13, 0.0, 11, 140.0]
