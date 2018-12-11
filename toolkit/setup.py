@@ -27,13 +27,13 @@ setup(
             swig_opts = ['-py3'], 
             include_dirs = ['epanet/toolkit'],
             library_dirs = ['epanet/toolkit'],
-            libraries = ['epanet'],
+            libraries = ['epanet2'],
             extra_compile_args = ["/D WITH_GENX"],
             language = 'C'
         )
     ],
     packages = {'epanet.toolkit'},  
     py_modules = ['toolkit'],
-    package_data = {'epanet.toolkit':['*epanet.dll', '*epanet.so']}, 
+    package_data = {'epanet.toolkit':['*epanet2.dll', '*epanet2.so']}, 
 
 )
