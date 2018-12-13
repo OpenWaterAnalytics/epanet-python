@@ -69,6 +69,7 @@ toolkit/tests/data/test.*
 *.h
 *.dll
 *.lib
+buildlib/
 
 # SWIG wrappers
 output.py
