@@ -1,0 +1,17 @@
+
+
+environment:
+    matrix:
+        - PYTHON: "C:\\Python36-x64"
+
+install:
+    - choco install swig
+    - "%PYTHON%\\python.exe -m pip install wheel tox"
+
+
+build: off
+
+
+test_script:
+    - before_build.bat %APPVEYOR_BUILD_FOLDER%
+    - "%PYTHON%\\python.exe -m tox -v"

@@ -63,12 +63,14 @@ target/
 
 # Testing
 .pytest_cache/
-toolkit/tests/data/test.*
+epanet_python/toolkit/tests/data/test.*
+epanet_python/toolkit/tests/data/test_reopen.inp
 
 # Wrapped libraries
 *.h
 *.dll
 *.lib
+buildlib/
 
 # SWIG wrappers
 output.py
