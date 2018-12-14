@@ -7,6 +7,7 @@
 ::          US EPA - ORD/NRMRL
 ::
 
+set PROJECT_PATH=%~1
 
 mkdir buildlib
 cd buildlib
@@ -20,10 +21,10 @@ cmake -G"Visual Studio 14 2015 Win64" -DBUILD_TESTS=0 ..
 cmake --build . --config Release
 
 
-copy /Y .\bin\Release\epanet2.dll ..\..\..\toolkit\epanet\toolkit\
-copy /Y .\lib\Release\epanet2.lib ..\..\..\toolkit\epanet\toolkit\
-copy /Y ..\include\*.h ..\..\..\toolkit\epanet\toolkit\
+copy /Y .\bin\Release\epanet2.dll  %PROJECT_PATH%\toolkit\epanet\toolkit\
+copy /Y .\lib\Release\epanet2.lib  %PROJECT_PATH%\toolkit\epanet\toolkit\
+copy /Y ..\include\*.h  %PROJECT_PATH%\toolkit\epanet\toolkit\
 
-copy /Y .\bin\Release\epanet-output.dll ..\..\..\output\epanet\output\
-copy /Y .\lib\Release\epanet-output.lib ..\..\..\output\epanet\output\
-copy /Y ..\tools\epanet-output\include\*.h ..\..\..\output\epanet\output\
+copy /Y .\bin\Release\epanet-output.dll  %PROJECT_PATH%\output\epanet\output\
+copy /Y .\lib\Release\epanet-output.lib  %PROJECT_PATH%\output\epanet\output\
+copy /Y ..\tools\epanet-output\include\*.h  %PROJECT_PATH%\output\epanet\output\
