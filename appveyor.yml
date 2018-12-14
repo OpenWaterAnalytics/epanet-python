@@ -13,4 +13,4 @@ build: off
 
 test_script:
     - before_build.bat %APPVEYOR_BUILD_FOLDER%
-    - "%PYTHON%\\python.exe -m tox"
+    - "%PYTHON%\\python.exe -m tox -v"
