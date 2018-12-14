@@ -8,12 +8,18 @@
 #              US EPA - ORD/NRMRL
 #
 
+import os
+
 import pytest
 import os.path as osp
 
 import epanet.toolkit.toolkit as en
 
-from data import INPUT_FILE_NET_1, REPORT_FILE_TEST, OUTPUT_FILE_TEST
+
+DATA_PATH = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'data')
+INPUT_FILE_NET_1 = os.path.join(DATA_PATH, 'Net1.inp')
+REPORT_FILE_TEST = os.path.join(DATA_PATH, 'test.rpt')
+OUTPUT_FILE_TEST = os.path.join(DATA_PATH, 'test.out')
 
 
 def test_createdelete():
@@ -44,7 +50,7 @@ def test_openclose():
 
 
 def test_savereopen():
-    input_file_reopen = "test_reopen.inp"
+    input_file_reopen = os.path.join(DATA_PATH, 'test_reopen.inp')
 
     _handle = en.proj_create()
 
