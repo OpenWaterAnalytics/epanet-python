@@ -1,8 +1,8 @@
 
 
 import os
+import pathlib
 
-import pip
 from six import iteritems
 
 from setuptools import setup
@@ -24,10 +24,10 @@ def install_microlibs(sources, develop=False):
     """ Use pip to install all microlibraries.  """
     print("installing all microlibs in {} mode".format(
               "development" if develop else "normal"))
-    wd = os.getcwd()
+    wd = pathlib.Path.cwd()
     for k, v in iteritems(sources):
         try:
-            microlib_dir = os.path.join(wd, v)
+            microlib_dir = wd.joinpath(v)
             if develop:
                 subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-e', '.'], cwd=microlib_dir)
             else:
