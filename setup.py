@@ -5,9 +5,10 @@ import pathlib
 
 from six import iteritems
 
-from setuptools import setup
+from setuptools import setup, find_namespace_packages
 from setuptools.command.develop import develop
 from setuptools.command.install import install
+#from setuptools.command.build import build
 
 import sys
 import subprocess
@@ -53,6 +54,11 @@ class InstallCmd(install):
         install.run(self)
 
 
+#class BuildCmd(build):
+#    """ Add custom steps for the build command """
+#    def run(self):
+#        print("building all microlibs")
+
 setup(
     name=PACKAGE_NAME,
     version="0.1.0",
@@ -63,8 +69,12 @@ setup(
     classifiers=[
         'Private :: Do Not Upload to pypi server',
     ],
+    package_dir={'': 'epanet_python'},
+    include_package_data=True,
+    packages=find_namespace_packages(where='epanet_python'),
     cmdclass={
         'install': InstallCmd,
         'develop': DevelopCmd
+#        'build': BuildCmd
     },
 )

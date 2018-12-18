@@ -1,0 +1,5 @@
+
+recursive-include epanet_python *.i *.h *.dll *.lib
+graft epanet_python
+prune epanet_python/output/build
+prune epanet_python/toolkit/build
