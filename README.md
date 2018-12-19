@@ -1,6 +1,9 @@
 # epanet-python
 Is home for Python packages related to the EPANET engine. 
 
+## Build Status
+[Appveyor](https://ci.appveyor.com/project/openwateranalytics/epanet-python)
+
 ## Contents
 * epanet-module - A ctypes based wrapper for the EPANET Toolkit (with support for reading EPANET binary output files).
 * epanet-python - SWIG based wrappers for the EPANET Toolkit and Output libraries. 
