@@ -56,7 +56,7 @@ class InstallCmd(install):
 
 setup(
     name=PACKAGE_NAME,
-    version="0.1.0",
+    version="0.2.0a",
     author="Michael Tryby",
     author_email="Michael Tryby@epa.gov",
     description="epanet_python - SWIG generated python wrappers for epanet libraries",
