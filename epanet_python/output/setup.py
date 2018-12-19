@@ -38,7 +38,7 @@ setup(
     ],
     namespace_packages=['epanet'],
     packages = {microlib_name},
-#    py_modules = ['output'],
+    py_modules = ['output'],
 #    include_package_data=True
     package_data = {microlib_name:['*epanet-output.dll', '*epanet-output.so']},
 

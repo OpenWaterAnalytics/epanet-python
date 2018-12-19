@@ -37,7 +37,7 @@ setup(
     ],
     namespace_packages = ['epanet'],
     packages = {microlib_name},
-#    py_modules = ['toolkit'],
+    py_modules = ['toolkit'],
 #    include_package_data=True
     package_data = {microlib_name:['*epanet2.dll', '*epanet2.so']},
 
