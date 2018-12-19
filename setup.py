@@ -5,7 +5,7 @@ import pathlib
 
 from six import iteritems
 
-from setuptools import setup, find_namespace_packages
+from setuptools import setup
 from setuptools.command.develop import develop
 from setuptools.command.install import install
 
