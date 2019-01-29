@@ -72,10 +72,10 @@ and return a (possibly) different pointer */
 
     $1 = ($1_type)(val);
 }
-%apply EnumeratedType {EN_NodeProperty, EN_LinkProperty, EN_TimeProperty,
+%apply EnumeratedType {EN_NodeProperty, EN_LinkProperty, EN_TimeParameter,
     EN_AnalysisStatistic, EN_CountType, EN_NodeType, EN_LinkType, EN_QualityType,
     EN_SourceType, EN_HeadLossType, EN_FlowUnits, EN_DemandModel, EN_Option,
-    EN_ControlType, EN_StatisticType, EN_MixingModel, EN_SaveOption, EN_PumpType,
+    EN_ControlType, EN_StatisticType, EN_MixingModel, EN_InitHydOption, EN_PumpType,
     EN_CurveType, EN_ActionCodeType, EN_RuleObject, EN_RuleVariable,
     EN_RuleOperator, EN_RuleStatus, EN_StatusReport};
 
@@ -123,7 +123,7 @@ int proj_close(Handle ph);
 int hydr_solve(Handle ph);
 int hydr_save(Handle ph);
 int hydr_open(Handle ph);
-int hydr_init(Handle ph, EN_SaveOption saveFlag);
+int hydr_init(Handle ph, EN_InitHydOption saveFlag);
 int hydr_run(Handle ph, long *OUTPUT);
 int hydr_next(Handle ph, long *OUTPUT);
 int hydr_close(Handle ph);
@@ -133,7 +133,7 @@ int hydr_usefile(Handle ph, char *filename);
 
 int qual_solve(Handle ph);
 int qual_open(Handle ph);
-int qual_init(Handle ph, EN_SaveOption saveFlag);
+int qual_init(Handle ph, EN_InitHydOption saveFlag);
 int qual_run(Handle ph, long *OUTPUT);
 int qual_next(Handle ph, long *OUTPUT);
 int qual_step(Handle ph, long *OUTPUT);
@@ -153,8 +153,8 @@ int anlys_getoption(Handle ph, EN_Option code, double *OUTPUT);
 int anlys_setoption(Handle ph, EN_Option code, double value);
 int anlys_getflowunits(Handle ph, int *OUTPUT);
 int anlys_setflowunits(Handle ph, EN_FlowUnits code);
-int anlys_gettimeparam(Handle ph, EN_TimeProperty code, long *OUTPUT);
-int anlys_settimeparam(Handle ph, EN_TimeProperty code, long value);
+int anlys_gettimeparam(Handle ph, EN_TimeParameter code, long *OUTPUT);
+int anlys_settimeparam(Handle ph, EN_TimeParameter code, long value);
 int anlys_getqualinfo(Handle ph, int *OUTPUT, char *id_out, char *id_out, int *OUTPUT);
 int anlys_getqualtype(Handle ph, int *OUTPUT, int *OUTPUT);
 int anlys_setqualtype(Handle ph, EN_QualityType qualcode, char *chemname, char *chemunits, char *tracenode);
@@ -310,16 +310,16 @@ class LinkProperty(enum.Enum):
     ENERGY          = EN_ENERGY
     LINKQUAL        = EN_LINKQUAL
     LINKPATTERN     = EN_LINKPATTERN
-    EFFICIENCY      = EN_EFFICIENCY
-    HEADCURVE       = EN_HEADCURVE
-    EFFICIENCYCURVE = EN_EFFICIENCYCURVE
-    PRICEPATTERN    = EN_PRICEPATTERN
-    STATE           = EN_STATE
-    CONST_POWER     = EN_CONST_POWER
-    SPEED           = EN_SPEED
+    PUMP_STATE      = EN_PUMP_STATE
+    PUMP_EFFIC      = EN_PUMP_EFFIC
+    PUMP_POWER      = EN_PUMP_POWER
+    PUMP_HCURVE     = EN_PUMP_HCURVE
+    PUMP_ECURVE     = EN_PUMP_ECURVE
+    PUMP_ECOST      = EN_PUMP_ECOST
+    PUMP_EPAT       = EN_PUMP_EPAT
 
 
-class TimeProperty(enum.Enum):
+class TimeParameter(enum.Enum):
     DURATION     = EN_DURATION
     HYDSTEP      = EN_HYDSTEP
     QUALSTEP     = EN_QUALSTEP
@@ -335,7 +335,7 @@ class TimeProperty(enum.Enum):
     QTIME        = EN_QTIME
     HALTFLAG     = EN_HALTFLAG
     NEXTEVENT    = EN_NEXTEVENT
-    NEXTEVENTIDX = EN_NEXTEVENTIDX
+    NEXTEVENTTANK = EN_NEXTEVENTTANK
 
 
 class AnalysisStatistic(enum.Enum):
@@ -420,8 +420,12 @@ class Option(enum.Enum):
     DEMANDMULT   = EN_DEMANDMULT
     HEADERROR    = EN_HEADERROR
     FLOWCHANGE   = EN_FLOWCHANGE
-    DEMANDDEFPAT = EN_DEMANDDEFPAT
+    DEFDEMANDPAT = EN_DEFDEMANDPAT
     HEADLOSSFORM = EN_HEADLOSSFORM
+    GLOBALEFFIC  = EN_GLOBALEFFIC
+    GLOBALPRICE  = EN_GLOBALPRICE
+    GLOBALPATTERN = EN_GLOBALPATTERN
+    DEMANDCHARGE = EN_DEMANDCHARGE
 
 
 class ControlType(enum.Enum):
@@ -432,6 +436,7 @@ class ControlType(enum.Enum):
 
 
 class StatisticType(enum.Enum):
+    SERIES      = EN_SERIES
     AVERAGE     = EN_AVERAGE
     MINIMUM     = EN_MINIMUM
     MAXIMUM     = EN_MAXIMUM
@@ -443,7 +448,6 @@ class MixingModel(enum.Enum):
     MIX2        = EN_MIX2
     FIFO        = EN_FIFO
     LIFO        = EN_LIFO
-
 
 
 class SaveOption(enum.Enum):
@@ -461,16 +465,16 @@ class PumpType(enum.Enum):
 
 
 class CurveType(enum.Enum):
-    VOL         = EN_V_CURVE
-    CHAR        = EN_P_CURVE
-    EFF         = EN_E_CURVE
-    HL          = EN_H_CURVE
-    GEN         = EN_G_CURVE
+    VOLUME_CURVE  = EN_VOLUME_CURVE
+    PUMP_CURVE    = EN_PUMP_CURVE
+    EFFIC_CURVE   = EN_EFFIC_CURVE
+    HLOSS_CURVE   = EN_HLOSS_CURVE
+    GENERIC_CURVE = EN_GENERIC_CURVE
 
 
 class ActionCode(enum.Enum):
-    UNCOND      = EN_UNCONDITIONAL
-    COND        = EN_CONDITIONAL
+    UNCONDITIONAL = EN_UNCONDITIONAL
+    CONDITIONAL   = EN_CONDITIONAL
 
 
 class RuleObject(enum.Enum):

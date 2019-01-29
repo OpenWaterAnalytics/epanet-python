@@ -139,7 +139,7 @@ def test_analysis(handle):
 
     test_value.clear()
     ref_value = [86400, 3600, 300, 7200, 0, 3600, 0, 360, 0, 0, 0, 0, 0, 0, 3600, 0]
-    for code in en.TimeProperty:
+    for code in en.TimeParameter:
         test_value.append(en.anlys_gettimeparam(handle, code))
     assert test_value == ref_value
 
@@ -237,7 +237,7 @@ def test_curve(handle):
     assert length == 1
 
     type = en.curv_gettype(handle, index)
-    assert en.CurveType(type) == en.CurveType.CHAR
+    assert en.CurveType(type) == en.CurveType.PUMP_CURVE
 
     value = en.curv_getvalue(handle, index, length)
     assert value == [1500.0, 250.0]
