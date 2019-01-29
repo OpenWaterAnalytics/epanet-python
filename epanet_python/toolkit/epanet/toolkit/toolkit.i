@@ -24,10 +24,6 @@
 %}
 
 
-#ifndef EN_API_FLOAT_TYPE
-  #define EN_API_FLOAT_TYPE float
-#endif
-
 // Opaque pointer to project
 typedef void *Handle;
 
@@ -76,10 +72,10 @@ and return a (possibly) different pointer */
 
     $1 = ($1_type)(val);
 }
-%apply EnumeratedType {EN_NodeProperty, EN_LinkProperty, EN_TimeProperty,
+%apply EnumeratedType {EN_NodeProperty, EN_LinkProperty, EN_TimeParameter,
     EN_AnalysisStatistic, EN_CountType, EN_NodeType, EN_LinkType, EN_QualityType,
     EN_SourceType, EN_HeadLossType, EN_FlowUnits, EN_DemandModel, EN_Option,
-    EN_ControlType, EN_StatisticType, EN_MixingModel, EN_SaveOption, EN_PumpType,
+    EN_ControlType, EN_StatisticType, EN_MixingModel, EN_InitHydOption, EN_PumpType,
     EN_CurveType, EN_ActionCodeType, EN_RuleObject, EN_RuleVariable,
     EN_RuleOperator, EN_RuleStatus, EN_StatusReport};
 
@@ -127,7 +123,7 @@ int proj_close(Handle ph);
 int hydr_solve(Handle ph);
 int hydr_save(Handle ph);
 int hydr_open(Handle ph);
-int hydr_init(Handle ph, EN_SaveOption saveFlag);
+int hydr_init(Handle ph, EN_InitHydOption saveFlag);
 int hydr_run(Handle ph, long *OUTPUT);
 int hydr_next(Handle ph, long *OUTPUT);
 int hydr_close(Handle ph);
@@ -137,7 +133,7 @@ int hydr_usefile(Handle ph, char *filename);
 
 int qual_solve(Handle ph);
 int qual_open(Handle ph);
-int qual_init(Handle ph, EN_SaveOption saveFlag);
+int qual_init(Handle ph, EN_InitHydOption saveFlag);
 int qual_run(Handle ph, long *OUTPUT);
 int qual_next(Handle ph, long *OUTPUT);
 int qual_step(Handle ph, long *OUTPUT);
@@ -150,15 +146,15 @@ int rprt_reset(Handle ph);
 int rprt_set(Handle ph, char *reportCommand);
 int rprt_setlevel(Handle ph, EN_StatusReport code);
 int rprt_getcount(Handle ph, EN_CountType code, int *OUTPUT);
-int rprt_anlysstats(Handle ph, EN_AnalysisStatistic code, EN_API_FLOAT_TYPE *OUTPUT );
+int rprt_anlysstats(Handle ph, EN_AnalysisStatistic code, double *OUTPUT );
 
 
-int anlys_getoption(Handle ph, EN_Option code, EN_API_FLOAT_TYPE *OUTPUT);
-int anlys_setoption(Handle ph, EN_Option code, EN_API_FLOAT_TYPE value);
+int anlys_getoption(Handle ph, EN_Option code, double *OUTPUT);
+int anlys_setoption(Handle ph, EN_Option code, double value);
 int anlys_getflowunits(Handle ph, int *OUTPUT);
 int anlys_setflowunits(Handle ph, EN_FlowUnits code);
-int anlys_gettimeparam(Handle ph, EN_TimeProperty code, long *OUTPUT);
-int anlys_settimeparam(Handle ph, EN_TimeProperty code, long value);
+int anlys_gettimeparam(Handle ph, EN_TimeParameter code, long *OUTPUT);
+int anlys_settimeparam(Handle ph, EN_TimeParameter code, long value);
 int anlys_getqualinfo(Handle ph, int *OUTPUT, char *id_out, char *id_out, int *OUTPUT);
 int anlys_getqualtype(Handle ph, int *OUTPUT, int *OUTPUT);
 int anlys_setqualtype(Handle ph, EN_QualityType qualcode, char *chemname, char *chemunits, char *tracenode);
@@ -170,17 +166,17 @@ int node_getindex(Handle ph, char *id, int *OUTPUT);
 int node_getid(Handle ph, int index, char *id_out);
 int node_setid(Handle ph, int index, char *newid);
 int node_gettype(Handle ph, int index, int *OUTPUT);
-int node_getvalue(Handle ph, int index, int code, EN_API_FLOAT_TYPE *OUTPUT);
-int node_setvalue(Handle ph, int index, int code, EN_API_FLOAT_TYPE value);
-int node_getcoord(Handle ph, int index, EN_API_FLOAT_TYPE *OUTPUT, EN_API_FLOAT_TYPE *OUTPUT);
-int node_setcoord(Handle ph, int index, EN_API_FLOAT_TYPE x, EN_API_FLOAT_TYPE y);
+int node_getvalue(Handle ph, int index, int code, double *OUTPUT);
+int node_setvalue(Handle ph, int index, int code, double value);
+int node_getcoord(Handle ph, int index, double *OUTPUT, double *OUTPUT);
+int node_setcoord(Handle ph, int index, double x, double y);
 
 
-int dmnd_getmodel(Handle ph, int *OUTPUT, EN_API_FLOAT_TYPE *OUTPUT, EN_API_FLOAT_TYPE *OUTPUT, EN_API_FLOAT_TYPE *OUTPUT);
-int dmnd_setmodel(Handle ph, int type, EN_API_FLOAT_TYPE pmin, EN_API_FLOAT_TYPE preq, EN_API_FLOAT_TYPE pexp);
+int dmnd_getmodel(Handle ph, int *OUTPUT, double *OUTPUT, double *OUTPUT, double *OUTPUT);
+int dmnd_setmodel(Handle ph, int type, double pmin, double preq, double pexp);
 int dmnd_getcount(Handle ph, int nodeIndex, int *OUTPUT);
-int dmnd_getbase(Handle ph, int nodeIndex, int demandIndex, EN_API_FLOAT_TYPE *OUTPUT);
-int dmnd_setbase(Handle ph, int nodeIndex, int demandIndex, EN_API_FLOAT_TYPE baseDemand);
+int dmnd_getbase(Handle ph, int nodeIndex, int demandIndex, double *OUTPUT);
+int dmnd_setbase(Handle ph, int nodeIndex, int demandIndex, double baseDemand);
 int dmnd_getpattern(Handle ph, int nodeIndex, int demandIndex, int *OUTPUT);
 int dmnd_setpattern(Handle ph, int nodeIndex, int demandIndex, int patIndex);
 int dmnd_getname(Handle ph, int nodeIndex, int demandIdx, char *msg_out);
@@ -196,8 +192,8 @@ int link_gettype(Handle ph, int index, int *OUTPUT);
 int link_settype(Handle ph, int *index, EN_LinkType type, int actionCode);
 int link_getnodes(Handle ph, int index, int *OUTPUT, int *OUTPUT);
 int link_setnodes(Handle ph, int index, int node1, int node2);
-int link_getvalue(Handle ph, int index, EN_LinkProperty code, EN_API_FLOAT_TYPE *OUTPUT);
-int link_setvalue(Handle ph, int index, int code, EN_API_FLOAT_TYPE value);
+int link_getvalue(Handle ph, int index, EN_LinkProperty code, double *OUTPUT);
+int link_setvalue(Handle ph, int index, int code, double value);
 
 
 int pump_gettype(Handle ph, int linkIndex, int *OUTPUT);
@@ -209,10 +205,10 @@ int ptrn_add(Handle ph, char *id);
 int ptrn_getindex(Handle ph, char *id, int *OUTPUT);
 int ptrn_getid(Handle ph, int index, char *id);
 int ptrn_getlength(Handle ph, int index, int *OUTPUT);
-int ptrn_getvalue(Handle ph, int index, int period, EN_API_FLOAT_TYPE *OUTPUT);
-int ptrn_setvalue(Handle ph, int index, int period, EN_API_FLOAT_TYPE value);
-int ptrn_getavgvalue(Handle ph, int index, EN_API_FLOAT_TYPE *OUTPUT);
-int ptrn_set(Handle ph, int index, EN_API_FLOAT_TYPE *values, int len);
+int ptrn_getvalue(Handle ph, int index, int period, double *OUTPUT);
+int ptrn_setvalue(Handle ph, int index, int period, double value);
+int ptrn_getavgvalue(Handle ph, int index, double *OUTPUT);
+int ptrn_set(Handle ph, int index, double *values, int len);
 
 
 int curv_add(Handle ph, char *id);
@@ -220,32 +216,32 @@ int curv_getindex(Handle ph, char *id, int *OUTPUT);
 int curv_getid(Handle ph, int index, char *id);
 int curv_getlength(Handle ph, int index, int *OUTPUT);
 int curv_gettype(Handle ph, int curveIndex, int *OUTPUT);
-int curv_getvalue(Handle ph, int curveIndex, int pointIndex, EN_API_FLOAT_TYPE *OUTPUT, EN_API_FLOAT_TYPE *OUTPUT);
-int curv_setvalue(Handle ph, int curveIndex, int pointIndex, EN_API_FLOAT_TYPE x, EN_API_FLOAT_TYPE y);
-int curv_get(Handle ph, int curveIndex, char* id, int *nValues, EN_API_FLOAT_TYPE **xValues, EN_API_FLOAT_TYPE **yValues);
-int curv_set(Handle ph, int index, EN_API_FLOAT_TYPE *x, EN_API_FLOAT_TYPE *y, int len);
+int curv_getvalue(Handle ph, int curveIndex, int pointIndex, double *OUTPUT, double *OUTPUT);
+int curv_setvalue(Handle ph, int curveIndex, int pointIndex, double x, double y);
+int curv_get(Handle ph, int curveIndex, char* id, int *nValues, double **xValues, double **yValues);
+int curv_set(Handle ph, int index, double *x, double *y, int len);
 
 
-int scntl_add(Handle ph, int *cindex, int ctype, int lindex, EN_API_FLOAT_TYPE setting, int nindex, EN_API_FLOAT_TYPE level);
+int scntl_add(Handle ph, int type, int linkIndex, double setting, int nodeIndex, double level, int *index);
 int scntl_delete(Handle ph, int index);
-int scntl_get(Handle ph, int controlIndex, int *OUTPUT, int *OUTPUT, EN_API_FLOAT_TYPE *OUTPUT, int *OUTPUT, EN_API_FLOAT_TYPE *OUTPUT);
-int scntl_set(Handle ph, int cindex, int ctype, int lindex, EN_API_FLOAT_TYPE setting, int nindex, EN_API_FLOAT_TYPE level);
+int scntl_get(Handle ph, int controlIndex, int *OUTPUT, int *OUTPUT, double *OUTPUT, int *OUTPUT, double *OUTPUT);
+int scntl_set(Handle ph, int cindex, int ctype, int lindex, double setting, int nindex, double level);
 
 
 int rcntl_add(Handle ph, char *rule);
 int rcntl_delete(Handle ph, int index);
-int rcntl_get(Handle ph, int index, int *nPremises, int *nThenActions, int *nElseActions, EN_API_FLOAT_TYPE *priority);
+int rcntl_get(Handle ph, int index, int *nPremises, int *nThenActions, int *nElseActions, double *priority);
 int rcntl_getid(Handle ph, int index, char* id);
-int rcntl_getpremise(Handle ph, int ruleIndex, int premiseIndex, int *logop, int *object, int *objIndex, int *variable, int *relop, int *status, EN_API_FLOAT_TYPE *value);
-int rcntl_setpremise(Handle ph, int ruleIndex, int premiseIndex, int logop, int object, int objIndex, int variable, int relop, int status, EN_API_FLOAT_TYPE value);
+int rcntl_getpremise(Handle ph, int ruleIndex, int premiseIndex, int *logop, int *object, int *objIndex, int *variable, int *relop, int *status, double *value);
+int rcntl_setpremise(Handle ph, int ruleIndex, int premiseIndex, int logop, int object, int objIndex, int variable, int relop, int status, double value);
 int rcntl_setpremiseindex(Handle ph, int ruleIndex, int premiseIndex, int objIndex);
 int rcntl_setpremisestatus(Handle ph, int ruleIndex, int premiseIndex, int status);
-int rcntl_setpremisevalue(Handle ph, int ruleIndex, int premiseIndex, EN_API_FLOAT_TYPE value);
-int rcntl_getthenaction(Handle ph, int ruleIndex, int actionIndex, int *linkIndex, int *status, EN_API_FLOAT_TYPE *setting);
-int rcntl_setthenaction(Handle ph, int ruleIndex, int actionIndex, int linkIndex, int status, EN_API_FLOAT_TYPE setting);
-int rcntl_getelseaction(Handle ph, int ruleIndex, int actionIndex, int *linkIndex, int *status, EN_API_FLOAT_TYPE *setting);
-int rcntl_setelseaction(Handle ph, int ruleIndex, int actionIndex, int linkIndex, int status, EN_API_FLOAT_TYPE setting);
-int rcntl_setrulepriority(Handle ph, int index, EN_API_FLOAT_TYPE priority);
+int rcntl_setpremisevalue(Handle ph, int ruleIndex, int premiseIndex, double value);
+int rcntl_getthenaction(Handle ph, int ruleIndex, int actionIndex, int *linkIndex, int *status, double *setting);
+int rcntl_setthenaction(Handle ph, int ruleIndex, int actionIndex, int linkIndex, int status, double setting);
+int rcntl_getelseaction(Handle ph, int ruleIndex, int actionIndex, int *linkIndex, int *status, double *setting);
+int rcntl_setelseaction(Handle ph, int ruleIndex, int actionIndex, int linkIndex, int status, double setting);
+int rcntl_setrulepriority(Handle ph, int index, double priority);
 
 
 int toolkit_getversion(int *int_out);
@@ -314,16 +310,16 @@ class LinkProperty(enum.Enum):
     ENERGY          = EN_ENERGY
     LINKQUAL        = EN_LINKQUAL
     LINKPATTERN     = EN_LINKPATTERN
-    EFFICIENCY      = EN_EFFICIENCY
-    HEADCURVE       = EN_HEADCURVE
-    EFFICIENCYCURVE = EN_EFFICIENCYCURVE
-    PRICEPATTERN    = EN_PRICEPATTERN
-    STATE           = EN_STATE
-    CONST_POWER     = EN_CONST_POWER
-    SPEED           = EN_SPEED
+    PUMP_STATE      = EN_PUMP_STATE
+    PUMP_EFFIC      = EN_PUMP_EFFIC
+    PUMP_POWER      = EN_PUMP_POWER
+    PUMP_HCURVE     = EN_PUMP_HCURVE
+    PUMP_ECURVE     = EN_PUMP_ECURVE
+    PUMP_ECOST      = EN_PUMP_ECOST
+    PUMP_EPAT       = EN_PUMP_EPAT
 
 
-class TimeProperty(enum.Enum):
+class TimeParameter(enum.Enum):
     DURATION     = EN_DURATION
     HYDSTEP      = EN_HYDSTEP
     QUALSTEP     = EN_QUALSTEP
@@ -339,7 +335,7 @@ class TimeProperty(enum.Enum):
     QTIME        = EN_QTIME
     HALTFLAG     = EN_HALTFLAG
     NEXTEVENT    = EN_NEXTEVENT
-    NEXTEVENTIDX = EN_NEXTEVENTIDX
+    NEXTEVENTTANK = EN_NEXTEVENTTANK
 
 
 class AnalysisStatistic(enum.Enum):
@@ -424,8 +420,12 @@ class Option(enum.Enum):
     DEMANDMULT   = EN_DEMANDMULT
     HEADERROR    = EN_HEADERROR
     FLOWCHANGE   = EN_FLOWCHANGE
-    DEMANDDEFPAT = EN_DEMANDDEFPAT
+    DEFDEMANDPAT = EN_DEFDEMANDPAT
     HEADLOSSFORM = EN_HEADLOSSFORM
+    GLOBALEFFIC  = EN_GLOBALEFFIC
+    GLOBALPRICE  = EN_GLOBALPRICE
+    GLOBALPATTERN = EN_GLOBALPATTERN
+    DEMANDCHARGE = EN_DEMANDCHARGE
 
 
 class ControlType(enum.Enum):
@@ -436,6 +436,7 @@ class ControlType(enum.Enum):
 
 
 class StatisticType(enum.Enum):
+    SERIES      = EN_SERIES
     AVERAGE     = EN_AVERAGE
     MINIMUM     = EN_MINIMUM
     MAXIMUM     = EN_MAXIMUM
@@ -447,7 +448,6 @@ class MixingModel(enum.Enum):
     MIX2        = EN_MIX2
     FIFO        = EN_FIFO
     LIFO        = EN_LIFO
-
 
 
 class SaveOption(enum.Enum):
@@ -465,16 +465,16 @@ class PumpType(enum.Enum):
 
 
 class CurveType(enum.Enum):
-    VOL         = EN_V_CURVE
-    CHAR        = EN_P_CURVE
-    EFF         = EN_E_CURVE
-    HL          = EN_H_CURVE
-    GEN         = EN_G_CURVE
+    VOLUME_CURVE  = EN_VOLUME_CURVE
+    PUMP_CURVE    = EN_PUMP_CURVE
+    EFFIC_CURVE   = EN_EFFIC_CURVE
+    HLOSS_CURVE   = EN_HLOSS_CURVE
+    GENERIC_CURVE = EN_GENERIC_CURVE
 
 
 class ActionCode(enum.Enum):
-    UNCOND      = EN_UNCONDITIONAL
-    COND        = EN_CONDITIONAL
+    UNCONDITIONAL = EN_UNCONDITIONAL
+    CONDITIONAL   = EN_CONDITIONAL
 
 
 class RuleObject(enum.Enum):
