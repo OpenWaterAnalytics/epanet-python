@@ -166,8 +166,8 @@ int node_getindex(Handle ph, char *id, int *OUTPUT);
 int node_getid(Handle ph, int index, char *id_out);
 int node_setid(Handle ph, int index, char *newid);
 int node_gettype(Handle ph, int index, int *OUTPUT);
-int node_getvalue(Handle ph, int index, int code, double *OUTPUT);
-int node_setvalue(Handle ph, int index, int code, double value);
+int node_getvalue(Handle ph, int index, EN_NodeProperty code, double *OUTPUT);
+int node_setvalue(Handle ph, int index, EN_NodeProperty code, double value);
 int node_getcoord(Handle ph, int index, double *OUTPUT, double *OUTPUT);
 int node_setcoord(Handle ph, int index, double x, double y);
 
