@@ -23,15 +23,14 @@ microlib_name = 'epanet.toolkit'
 
 setup(
     name = microlib_name,
-    version = "0.0.2a0",
+    version = "0.0.3a0",
     ext_modules = [
         Extension("epanet.toolkit._toolkit",
             sources = ['epanet/toolkit/toolkit.i'],
             swig_opts = ['-py3'],
             include_dirs = ['epanet/toolkit'],
             library_dirs = ['epanet/toolkit'],
-            libraries = ['epanet2'],
-            extra_compile_args = ["/D WITH_GENX"],
+            libraries = ['epanet_py'],
             language = 'C'
         )
     ],
@@ -39,6 +38,6 @@ setup(
     packages = {microlib_name},
     py_modules = ['toolkit'],
 #    include_package_data=True
-    package_data = {microlib_name:['*epanet2.dll', '*epanet2.so']},
+    package_data = {microlib_name:['*epanet_py.dll', '*epanet_py.so']},
 
 )

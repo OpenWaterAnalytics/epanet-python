@@ -15,18 +15,18 @@ set OUTPUT_PATH=\epanet_python\output\epanet\output
 
 mkdir buildlib
 cd buildlib
-git clone --branch=dev-swig-redux https://github.com/michaeltryby/EPANET.git
+git clone --branch=dev https://github.com/michaeltryby/EPANET.git
 cd epanet
 
 
 mkdir buildprod
 cd buildprod
-cmake -G"Visual Studio 14 2015 Win64" -DBUILD_TESTS=0 ..
+cmake -G"Visual Studio 14 2015 Win64" -DBUILD_PY_LIB=ON -DBUILD_TESTS=OFF ..
 cmake --build . --config Release
 
 
-copy /Y .\bin\Release\epanet2.dll  %PROJECT_PATH%\%TOOLKIT_PATH%
-copy /Y .\lib\Release\epanet2.lib  %PROJECT_PATH%\%TOOLKIT_PATH%
+copy /Y .\bin\Release\epanet_py.dll  %PROJECT_PATH%\%TOOLKIT_PATH%
+copy /Y .\lib\Release\epanet_py.lib  %PROJECT_PATH%\%TOOLKIT_PATH%
 copy /Y ..\include\*.h  %PROJECT_PATH%\%TOOLKIT_PATH%
 
 copy /Y .\bin\Release\epanet-output.dll  %PROJECT_PATH%\%OUTPUT_PATH%
