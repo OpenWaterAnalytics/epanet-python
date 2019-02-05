@@ -15,7 +15,7 @@ set OUTPUT_PATH=\epanet_python\output\epanet\output
 
 mkdir buildlib
 cd buildlib
-git clone --branch=dev https://github.com/michaeltryby/EPANET.git
+git clone --branch=dev https://github.com/OpenWaterAnalytics/EPANET.git
 cd epanet
 
 
