@@ -1,11 +1,15 @@
 
 
 environment:
-    matrix:
-        - PYTHON: "C:\\Python36-x64"
+  my_variable:
+    secure: En1qcj1/l2B3Nov+vOHlfRrFZk00bg1HPRouD64Gzfw=
+  matrix:
+    - PYTHON: "C:\\Python36-x64"
+
 
 install:
     - choco install swig
+    - appveyor-tools\secure-file -decrypt coveralls.yml.enc -secret %my_secret%
     - "%PYTHON%\\python.exe -m pip install wheel tox"
 
 
