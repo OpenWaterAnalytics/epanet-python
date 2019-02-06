@@ -9,6 +9,7 @@ environment:
 
 install:
     - choco install swig
+    - ps: iex ((New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/appveyor/secure-file/master/install.ps1'))
     - appveyor-tools\secure-file -decrypt .coveralls.yml.enc -secret %my_secret%
     - "%PYTHON%\\python.exe -m pip install wheel tox"
 
