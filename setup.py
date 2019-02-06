@@ -68,5 +68,7 @@ setup(
         'install': InstallCmd,
         'develop': DevelopCmd
 
-    }
+    },
+    setup_requires=["pytest-runner"],
+    tests_require=["pytest"]
 )
