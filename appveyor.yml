@@ -27,8 +27,8 @@ test_script:
 
 after_test:
     - "%PYTHON%\\python.exe -m pip install cibuildwheel==0.10.1"
-    - "%PYTHON%\\python.exe -m cibuildwheel --output-dir wheelhouse .\\swmm_python\\output"
-    - "%PYTHON%\\python.exe -m cibuildwheel --output-dir wheelhouse .\\swmm_python\\toolkit"
+    - "%PYTHON%\\python.exe -m cibuildwheel --output-dir wheelhouse .\\epanet_python\\output"
+    - "%PYTHON%\\python.exe -m cibuildwheel --output-dir wheelhouse .\\epanet_python\\toolkit"
 
 artifacts:
     - path: "wheelhouse\\*.whl"
