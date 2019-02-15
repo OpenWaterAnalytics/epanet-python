@@ -56,7 +56,7 @@ class InstallCmd(install):
 
 setup(
     name=PACKAGE_NAME,
-    version="0.2.0a",
+    version="0.3.0.dev0",
 
     cmdclass={
         'install': InstallCmd,

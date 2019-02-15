@@ -17,7 +17,7 @@ from setuptools.command.build_ext import build_ext
 
 setup(
     name = 'epanet.toolkit',
-    version = "0.0.3a0",
+    version = "0.2.0.dev0",
     ext_modules = [
         Extension("epanet.toolkit._toolkit",
             sources = ['epanet/toolkit/toolkit_wrap.c'],

@@ -25,7 +25,7 @@ microlib_name = 'epanet.output'
 
 setup(
     name = 'epanet.output',
-    version = "0.1.2a0",
+    version = "0.2.0.dev0",
     ext_modules = [
         Extension("epanet.output._output",
             sources = ['epanet/output/output_wrap.c'],
