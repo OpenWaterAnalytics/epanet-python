@@ -6,8 +6,20 @@
 ::  Author: Michael E. Tryby
 ::          US EPA - ORD/NRMRL
 ::
+:: Requires:
+::     CMake
+::     Visual Studio 2015
+::     SWIG
+::
+:: Note:
+::     This script must be located at the root of the project folder
+:      in order to work correctly.
+::
 
-set PROJECT_PATH=%~1
+
+:: Determine project path and strip trailing \ from path
+set "PROJECT_PATH=%~dp0"
+IF %PROJECT_PATH:~-1%==\ set "PROJECT_PATH=%PROJECT_PATH:~0,-1%"
 
 set TOOLKIT_PATH=\epanet_python\toolkit\epanet\toolkit
 set OUTPUT_PATH=\epanet_python\output\epanet\output
@@ -32,3 +44,14 @@ copy /Y ..\include\*.h  %PROJECT_PATH%\%TOOLKIT_PATH%
 copy /Y .\bin\Release\epanet-output.dll  %PROJECT_PATH%\%OUTPUT_PATH%
 copy /Y .\lib\Release\epanet-output.lib  %PROJECT_PATH%\%OUTPUT_PATH%
 copy /Y ..\tools\epanet-output\include\*.h  %PROJECT_PATH%\%OUTPUT_PATH%
+
+
+:: Generate swig wrappers
+cd %PROJECT_PATH%\%TOOLKIT_PATH%
+swig -python -py3 toolkit.i
+cd %PROJECT_PATH%\%OUTPUT_PATH%
+swig -python -py3 output.i
+
+
+:: Return to project root
+cd %PROJECT_PATH%
