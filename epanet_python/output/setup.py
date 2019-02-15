@@ -24,23 +24,24 @@ except ImportError:
 microlib_name = 'epanet.output'
 
 setup(
-    name = microlib_name,
-    version = "0.1.2a0",
+    name = 'epanet.output',
+    version = "0.2.0.dev0",
     ext_modules = [
         Extension("epanet.output._output",
+            sources = ['epanet/output/output_wrap.c'],
             include_dirs = ['epanet/output'],
             libraries = ['epanet-output'],
             library_dirs = ['epanet/output'],
-            sources = ['epanet/output/output.i'],
-            swig_opts=['-py3'],
             language = 'C'
         )
     ],
-    namespace_packages=['epanet'],
-    packages = {microlib_name},
-    py_modules = ['output'],
-#    include_package_data=True
-    package_data = {microlib_name:['*epanet-output.dll', '*epanet-output.so']},
 
-#    install_requires = []
+    # tox can't find swmm module at test time unless namespace is declared
+    namespace_packages=['epanet'],
+
+    packages = {'epanet.output'},
+    py_modules = ['output'],
+    package_data = {'epanet.output':['*epanet-output.dll', '*epanet-output.so']},
+
+    zip_safe=False,
 )

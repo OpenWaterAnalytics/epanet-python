@@ -56,7 +56,13 @@ class InstallCmd(install):
 
 setup(
     name=PACKAGE_NAME,
-    version="0.2.0a",
+    version="0.3.0.dev0",
+
+    cmdclass={
+        'install': InstallCmd,
+        'develop': DevelopCmd
+    },
+
     author="Michael Tryby",
     author_email="Michael Tryby@epa.gov",
     description="epanet_python - SWIG generated python wrappers for epanet libraries",
@@ -64,11 +70,7 @@ setup(
     classifiers=[
         'Private :: Do Not Upload to pypi server',
     ],
-    cmdclass={
-        'install': InstallCmd,
-        'develop': DevelopCmd
 
-    },
     setup_requires=["pytest-runner"],
-    tests_require=["pytest"]
+    tests_require=["pytest", 'numpy']
 )
