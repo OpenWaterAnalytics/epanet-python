@@ -309,7 +309,7 @@ def ENgettimeparam(paramcode):
     if ierr!=0: raise ENtoolkitError(ierr)
     return j.value
     
-def  ENgetqualtype(qualcode):
+def  ENgetqualtype():
     """Retrieves the type of water quality analysis called for
     returns  qualcode: Water quality analysis codes are as follows:
                        EN_NONE	0 No quality analysis
