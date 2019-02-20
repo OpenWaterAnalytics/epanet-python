@@ -567,6 +567,7 @@ def ENsolveH():
 def ENopenH(): 
     """Opens the hydraulics analysis system"""
     ierr= _lib.ENopenH()
+    if ierr != 0: raise ENtoolkitError(ierr)
 
 
 def ENinitH(flag=None):
