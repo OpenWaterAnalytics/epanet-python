@@ -117,7 +117,7 @@ def test_qual_step(handle):
 
 def test_report(handle):
 
-    nlinks = en.rprt_getcount(handle, en.CountType.LINKS)
+    nlinks = en.proj_getcount(handle, en.CountType.LINKS)
     assert nlinks == 13
 
     en.hydr_solve(handle)

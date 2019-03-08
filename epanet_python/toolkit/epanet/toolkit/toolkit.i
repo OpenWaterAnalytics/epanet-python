@@ -116,6 +116,9 @@ and return a (possibly) different pointer */
 int proj_run(Handle ph, const char *input_path, const char *report_path, const char *output_path);
 int proj_init(Handle ph, const char *rptFile, const char *outFile, EN_FlowUnits unitsType, EN_HeadLossType headLossType);
 int proj_open(Handle ph, const char *inpFile, const char *rptFile, const char *binOutFile);
+//int proj_gettitle(Handle ph, char *line1, char *line2, char *line3);
+//int proj_settitle(Handle ph, const char *line1, const char *line2, const char *line3);
+int proj_getcount(Handle ph, EN_CountType code, int *OUTPUT);
 int proj_savefile(Handle ph, const char *filename);
 int proj_close(Handle ph);
 
@@ -145,7 +148,6 @@ int rprt_writeresults(Handle ph);
 int rprt_reset(Handle ph);
 int rprt_set(Handle ph, char *reportCommand);
 int rprt_setlevel(Handle ph, EN_StatusReport code);
-int rprt_getcount(Handle ph, EN_CountType code, int *OUTPUT);
 int rprt_anlysstats(Handle ph, EN_AnalysisStatistic code, double *OUTPUT );
 
 

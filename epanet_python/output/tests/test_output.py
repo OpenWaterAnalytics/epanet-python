@@ -51,6 +51,16 @@ def test_outputmetadata_handle(handle):
         assert temp == ref[attr]
 
 
+def test_getnetsize(handle):
+
+    ref_array = np.array([11, 2, 13, 1, 0])
+
+    netsize_list = oapi.getnetsize(handle)
+    assert len(netsize_list) == 5
+
+    assert np.array_equal(netsize_list, ref_array)
+
+
 def test_getnodeSeries(handle):
 
     ref_array = np.array(
