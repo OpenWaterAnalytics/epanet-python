@@ -52,7 +52,7 @@ def test_outputmetadata_handle(handle):
 
 
 def test_getnetsize(handle):
-
+    # node, tank, link, pump, valve
     ref_array = np.array([11, 2, 13, 1, 0])
 
     netsize_list = oapi.getnetsize(handle)
