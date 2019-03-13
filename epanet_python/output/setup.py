@@ -13,12 +13,13 @@
 #   Python packages: numpy
 #
 
-try:
-    from setuptools import setup, Extension
-    from setuptools.command.build_ext import build_ext
-except ImportError:
-    from distutils.core import setup, Extension
-    from distutils.command.build_ext import build_ext
+#try:
+from setuptools import setup, Extension
+from setuptools.command.build_ext import build_ext
+
+#except ImportError:
+#    from distutils.core import setup, Extension
+#    from distutils.command.build_ext import build_ext
 
 
 microlib_name = 'epanet.output'

@@ -7,13 +7,14 @@
 ::          US EPA - ORD/NRMRL
 ::
 :: Requires:
+::     git
 ::     CMake
-::     Visual Studio 2015
+::     Visual Studio Build Tools
 ::     SWIG
 ::
 :: Note:
 ::     This script must be located at the root of the project folder
-:      in order to work correctly.
+::     in order to work correctly.
 ::
 
 
