@@ -91,7 +91,7 @@ def test_hyd_step(handle):
 
          step = en.hydr_next(handle)
 
-         if time == 0.:
+         if not step > 0.:
              break
 
      en.hydr_close(handle)
@@ -109,7 +109,7 @@ def test_qual_step(handle):
 
         step = en.qual_next(handle)
 
-        if time == 0.:
+        if not step > 0.:
             break
 
     en.qual_close(handle)
@@ -251,3 +251,55 @@ def test_simplecontrol(handle):
     value.clear()
     value = en.scntl_get(handle, 2)
     assert value == [1, 13, 0.0, 11, 140.0]
+
+
+WARNING_TEST_INP = os.path.join(DATA_PATH, 'test_warnings.inp')
+WARNING_TEST_RPT = os.path.join(DATA_PATH, 'test_warnings.rpt')
+WARNING_TEST_OUT = os.path.join(DATA_PATH, 'test_warnings.out')
+
+@pytest.fixture()
+def handle_warn(request):
+    _handle = en.proj_create()
+    en.proj_open(_handle, WARNING_TEST_INP, WARNING_TEST_RPT, WARNING_TEST_OUT)
+
+    def close():
+        en.proj_close(_handle)
+        en.proj_delete(_handle)
+
+    request.addfinalizer(close)
+    return _handle
+
+
+import warnings
+warnings.simplefilter("default")
+
+def test_hyd_warning(handle_warn):
+    with pytest.warns(Warning):
+        en.hydr_open(handle_warn)
+        en.hydr_init(handle_warn, en.SaveOption.NOSAVE)
+
+        while True:
+            time = en.hydr_run(handle_warn)
+
+            step = en.hydr_next(handle_warn)
+
+            if not step > 0.:
+                break
+
+        en.hydr_close(handle_warn)
+
+
+def test_exception(handle_warn):
+    with pytest.raises(Exception):
+        #en.hydr_open(handle_warn)
+        en.hydr_init(handle_warn, en.SaveOption.NOSAVE)
+
+        while True:
+            time = en.hydr_run(handle_warn)
+
+            step = en.hydr_next(handle_warn)
+
+            if not step > 0.:
+                break
+
+        en.hydr_close(handle_warn)

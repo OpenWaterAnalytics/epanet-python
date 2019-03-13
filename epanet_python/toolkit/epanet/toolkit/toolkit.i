@@ -97,16 +97,24 @@ and return a (possibly) different pointer */
 /* INSERTS CUSTOM EXCEPTION HANDLING IN WRAPPER */
 %exception
 {
+    int err_code;
     char* err_msg;
 
     err_clear(arg1);
 
     $function
-    if (err_check(arg1, &err_msg))
+
+    err_code = err_check(arg1, &err_msg);
+    if ( err_code > 10)
     {
         PyErr_SetString(PyExc_Exception, err_msg);
         toolkit_free((void **)&err_msg);
         SWIG_fail;
+    }
+    else if (err_code > 0)
+    {
+        PyErr_WarnEx(PyExc_Warning, err_msg, 2);
+        toolkit_free((void **)&err_msg);
     }
 }
 

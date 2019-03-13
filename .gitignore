@@ -65,6 +65,7 @@ target/
 .pytest_cache/
 epanet_python/toolkit/tests/data/test.*
 epanet_python/toolkit/tests/data/test_reopen.inp
+epanet_python/toolkit/tests/data/test_warnings.rpt
 
 # Wrapped libraries
 *.h
