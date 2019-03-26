@@ -44,7 +44,7 @@ copy /Y ..\include\*.h  %PROJECT_PATH%\%TOOLKIT_PATH%
 
 copy /Y .\bin\Release\epanet-output.dll  %PROJECT_PATH%\%OUTPUT_PATH%
 copy /Y .\lib\Release\epanet-output.lib  %PROJECT_PATH%\%OUTPUT_PATH%
-copy /Y ..\tools\epanet-output\include\*.h  %PROJECT_PATH%\%OUTPUT_PATH%
+copy /Y ..\src\outfile\include\*.h  %PROJECT_PATH%\%OUTPUT_PATH%
 
 
 :: Generate swig wrappers
