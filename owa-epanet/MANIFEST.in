@@ -1,0 +1,12 @@
+include packages/epanet/*.py
+include setup.py
+include README.md
+include CMakeLists.txt
+include LICENSE
+include wrapper/*.i
+graft EPANET
+prune _skbuild
+prune _cmake_test_compile
+prune *.so
+prune *.dylib
+prune *.dll

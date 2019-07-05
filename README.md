@@ -9,13 +9,14 @@ Is home for Python packages related to the EPANET engine.
 
 
 ## Contents
+* owa-epanet - the thinnest of SWIG-generated wrappers for EPANET.
 * epanet-module - A ctypes based wrapper for the EPANET Toolkit (with support for reading EPANET binary output files).
 * epanet-python - SWIG based wrappers for the EPANET Toolkit and Output libraries.
 * ...
 
 
 ## Motivation
-These Python wrappers for EPANET are available to developers interested in building higher level functionality on top. Starting with a clean, auto-generated python API wrapper is a good foundation for building more abstractions. This also intersects with the near-term needs of the GUI work (which uses python and QT) - SWIG-wrapping will mean that the epanet library becomes scriptable from within the GUI.
+These Python wrappers for EPANET are available to developers interested in building higher level functionality on top. Starting with a clean, auto-generated python API wrapper is a good foundation for building more abstractions. SWIG-wrapping will mean that the epanet library becomes scriptable from within a GUI.
 
 Another benefit of auto-generating the wrapper is that it's fairly unambiguous; nobody's personal preferences get involved until we get to slightly higher-level abstractions, but everyone can share and benefit from the foundational SWIG layer.
 
