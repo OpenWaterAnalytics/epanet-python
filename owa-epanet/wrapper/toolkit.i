@@ -81,8 +81,11 @@ struct Project {};
 };
 
 %apply long *OUTPUT {
-    long *value
-}
+    long *value,
+    long *currentTime,
+    long *tStep,
+    long *timeLeft
+};
 
 %cstring_bounded_output(char *OUTCHAR, EN_MAXMSG);
 
