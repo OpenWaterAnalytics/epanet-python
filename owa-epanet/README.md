@@ -11,3 +11,10 @@ python3 setup.py sdist bdist_wheel
 cd test && pipenv install ../dist/*.whl && pipenv run python -c 'from epanet import toolkit; print(toolkit.__dict__)'
 
 ```
+
+This python library was packaged in the following way:
+
+```
+python3 setup.py sdist bdist_wheel
+python3 -m twine upload dist/*
+```
