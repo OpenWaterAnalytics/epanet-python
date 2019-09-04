@@ -309,7 +309,7 @@ def ENgettimeparam(paramcode):
     if ierr!=0: raise ENtoolkitError(ierr)
     return j.value
     
-def  ENgetqualtype(qualcode):
+def  ENgetqualtype():
     """Retrieves the type of water quality analysis called for
     returns  qualcode: Water quality analysis codes are as follows:
                        EN_NONE	0 No quality analysis
@@ -329,7 +329,7 @@ def  ENgetqualtype(qualcode):
 
 
 #-------Retrieving other network information--------
-def ENgetcontrol(cindex, ctype, lindex, setting, nindex, level ):
+def ENgetcontrol(cindex):
     """Retrieves the parameters of a simple control statement.
     Arguments:
        cindex:  control statement index
@@ -343,10 +343,17 @@ def ENgetcontrol(cindex, ctype, lindex, setting, nindex, level ):
        level:   value of controlling water level or pressure for level controls 
                 or of time of control action (in seconds) for time-based controls"""
     #int ENgetcontrol(int cindex, int* ctype, int* lindex, float* setting, int* nindex, float* level )
-    ierr= _lib.ENgetcontrol(ctypes.c_int(cindex), ctypes.c_int(ctype), 
-                            ctypes.c_int(lindex), ctypes.c_float(setting), 
-                            ctypes.c_int(nindex), ctypes.c_float(level) )
+    ctype = ctypes.c_int()
+    lindex = ctypes.c_int()
+    setting = ctypes.c_float()
+    nindex = ctypes.c_int()
+    level = ctypes.c_float()
+
+    ierr= _lib.ENgetcontrol(ctypes.c_int(cindex), ctypes.byref(ctype),
+                            ctypes.byref(lindex), ctypes.byref(setting),
+                            ctypes.byref(nindex), ctypes.byref(level) )
     if ierr!=0: raise ENtoolkitError(ierr)
+    return ctype.value, lindex.value, setting.value, nindex.value, level.value
 
 
 def ENgetoption(optioncode):
@@ -560,6 +567,7 @@ def ENsolveH():
 def ENopenH(): 
     """Opens the hydraulics analysis system"""
     ierr= _lib.ENopenH()
+    if ierr != 0: raise ENtoolkitError(ierr)
 
 
 def ENinitH(flag=None):
