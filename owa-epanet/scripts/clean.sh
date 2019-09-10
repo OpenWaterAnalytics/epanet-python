@@ -9,7 +9,6 @@ _skbuild \
 _cmake_test_compile \
 dist \
 packages/epanet.egg-info \
-test/*
+test/Pipf*
 
 touch test/Pipfile
-

@@ -6,9 +6,8 @@
 %{
 #include <epanet2_2.h>
 %}
-%include <epanet2_enums.h>
 
-/* strip the pseudo-scope from function declarations */
+/* strip the pseudo-scope from function declarations and enums*/
 %rename("%(strip:[EN_])s") "";
 
 %typemap(in,numinputs=0) EN_Project* (EN_Project temp) {
@@ -24,16 +23,6 @@
     $result = Py_None;
     Py_INCREF($result);
 }
-
-%delobject deleteproject;
-
-struct Project {};
-%extend Project {
-  ~Project() {
-    EN_deleteproject($self);
-  }
-};
-%ignore Project;
 
 %apply int *OUTPUT {
     int *count,
@@ -105,6 +94,14 @@ struct Project {};
     int *inout_index
 }
 
+%nodefault Project;
+struct Project {};
+%extend Project {
+  ~Project() {
+    EN_deleteproject($self);
+  }
+};
+ignore Project;
 
 /* INSERTS CUSTOM EXCEPTION HANDLING IN WRAPPER */
 %exception
@@ -120,6 +117,8 @@ struct Project {};
 }
 
 %feature("autodoc", "2");
+%newobject EN_createproject;
+%delobject EN_deleteproject;
+%include <epanet2_enums.h>
 %include <epanet2_2.h>
-
 %exception;
