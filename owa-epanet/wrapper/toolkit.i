@@ -108,7 +108,9 @@ ignore Project;
 {
     $action
     if ( result > 10) {
-        PyErr_SetString(PyExc_Exception, "ERROR");
+        char errmsg[EN_MAXMSG];
+        EN_geterror(result, errmsg, EN_MAXMSG);
+        PyErr_SetString(PyExc_Exception, errmsg);
         SWIG_fail;
     }
     else if (result > 0) {
