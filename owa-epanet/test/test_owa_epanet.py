@@ -25,7 +25,7 @@ def clean_dir():
 
 def test_create_project():
     epanet_proj = en.createproject()
-    assert(str(type(epanet_proj)) == '<class \'SwigPyObject\'>')
+    assert str(type(epanet_proj)) == '<class \'SwigPyObject\'>'
 
 
 def test_open():
@@ -70,7 +70,7 @@ def test_save_inp_file():
     epanet_proj = en.createproject()
     en.open(ph=epanet_proj, inpFile=example_1_path, rptFile='report.rpt', outFile='output.out')
     en.saveinpfile(ph=epanet_proj, filename='saved_inp_file.inp')
-    assert(os.path.isfile('saved_inp_file.inp'))
+    assert os.path.isfile('saved_inp_file.inp')
     clean_dir()
 
 
@@ -79,7 +79,7 @@ def test_openh():
     en.open(ph=epanet_proj, inpFile=example_1_path, rptFile='report.rpt', outFile='output.out')
     res = en.openH(ph=epanet_proj)
     en.close(ph=epanet_proj)
-    assert (not res)
+    assert not res
     clean_dir()
 
 
@@ -89,7 +89,7 @@ def test_inith():
     en.openH(ph=epanet_proj)
     res = en.initH(ph=epanet_proj, initFlag=0)
     en.close(ph=epanet_proj)
-    assert (not res)
+    assert not res
     clean_dir()
 
 
@@ -100,7 +100,7 @@ def test_runh():
     en.initH(ph=epanet_proj, initFlag=0)
     res = en.runH(ph=epanet_proj)
     en.close(ph=epanet_proj)
-    assert (res == 0)
+    assert res == 0
     clean_dir()
 
 
@@ -112,7 +112,7 @@ def test_nexth():
     en.runH(ph=epanet_proj)
     res = en.nextH(ph=epanet_proj)
     en.close(ph=epanet_proj)
-    assert (res == 3600)
+    assert res == 3600
     clean_dir()
 
 
@@ -123,7 +123,7 @@ def test_closeh():
     en.initH(ph=epanet_proj, initFlag=0)
     res = en.closeH(ph=epanet_proj)
     en.close(ph=epanet_proj)
-    assert (not res)
+    assert not res
     clean_dir()
 
 
@@ -141,7 +141,7 @@ def test_inith_runh_nexth():
             break
     en.closeH(ph=epanet_proj)
     en.close(ph=epanet_proj)
-    assert (tlist == timesteps)
+    assert tlist == timesteps
     clean_dir()
 
 
@@ -152,7 +152,7 @@ def test_solveh_solveq():
     en.solveQ(ph=epanet_proj)
     en.report(ph=epanet_proj)
     en.close(ph=epanet_proj)
-    assert (os.path.isfile('output.out'))
+    assert os.path.isfile('output.out')
     clean_dir()
 
 
@@ -172,7 +172,7 @@ def test_initq_runq_nextq():
     en.closeQ(ph=epanet_proj)
     en.report(ph=epanet_proj)
     en.close(ph=epanet_proj)
-    assert(tlist == timesteps)
+    assert tlist == timesteps
     clean_dir()
 
 
@@ -191,6 +191,7 @@ def test_stepq():
             break
     en.closeQ(ph=epanet_proj)
     en.close(ph=epanet_proj)
+    assert tlist[:60] == wq_times
     clean_dir()
 
 
@@ -235,8 +236,8 @@ def test_water_age_sim():
     en.closeQ(ph=epanet_proj)
     en.closeH(ph=epanet_proj)
     en.close(ph=epanet_proj)
-    assert (age_list[26] == [1.0, 2.2141675704376946, 12.939125434025273, 24.44152992466322, 13.174235412569542,
-                             24.441519659540887, 15.679376648181817, 21.97064181429266, 19.048343501261524, 1.0])
+    assert age_list[26] == [1.0, 2.2141675704376946, 12.939125434025273, 24.44152992466322, 13.174235412569542,
+                            24.441519659540887, 15.679376648181817, 21.97064181429266, 19.048343501261524, 1.0]
     clean_dir()
 
 
