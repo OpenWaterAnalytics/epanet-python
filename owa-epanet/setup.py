@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name = "owa-epanet",
-    version = "1.0.4",
+    version = "1.0.5",
     author = "Sam Hatchett",
     author_email = "samhatchett@gmail.com",
     description = "a thin wrapper for epanet hydraulic toolkit",
