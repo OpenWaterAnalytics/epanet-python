@@ -365,7 +365,7 @@ def ENgetoption(optioncode):
                 EN_TOLERANCE 
                 EN_EMITEXPON 
                 EN_DEMANDMULT""" 
-    j= ctypes.c_int()
+    j= ctypes.c_float()
     ierr= _lib.ENgetoption(optioncode, ctypes.byref(j))
     if ierr!=0: raise ENtoolkitError(ierr)
     return j.value
