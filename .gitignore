@@ -55,3 +55,35 @@ docs/_build/
 
 # PyBuilder
 target/
+
+# PyCharm
+.idea/
+
+# Eclipse
+.settings/
+.project
+.pydevproject
+
+# Testing
+.pytest_cache/
+epanet_python/toolkit/tests/data/test.*
+epanet_python/toolkit/tests/data/test_reopen.inp
+epanet_python/toolkit/tests/data/test_warnings.rpt
+
+# Wrapped libraries
+*.h
+*.dll
+*.lib
+buildlib/
+
+# SWIG wrappers
+output.py
+output_wrap.c
+toolkit.py
+toolkit_wrap.c
+MANIFEST
+owa-epanet/dist/
+owa-epanet/_skbuild/
+
+*.so
+*.dylib
