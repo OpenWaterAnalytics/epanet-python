@@ -98,12 +98,16 @@ def ENgetnodeid(index):
     if ierr!=0: raise ENtoolkitError(ierr)
     return label.value
 
-def ENsettitle(title):
+def ENsettitle(line1,line2,line3):
 	"""Set inp file title
 	
 	Arguments:
-	title: inp title"""
-	ierr = _lib.ENsettitle(ctypes.c_char_p(title.encode()),'','')
+	line1: line 1 of 3 inp title lines
+	line2: line 2 of 3 inp title lines
+	line3: line 3 of 3 inp title lines"""
+	ierr = _lib.ENsettitle(ctypes.c_char_p(line1.encode()),
+			       ctypes.c_char_p(line2.encode()),
+			       ctypes.c_char_p(line3.encode()))
 	if ierr!=0: raise ENtoolkitError(ierr)
 
 
