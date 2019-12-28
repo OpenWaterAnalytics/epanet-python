@@ -1,11 +1,14 @@
 cmake_minimum_required(VERSION 3.8)
 
+project(OWA-EPANET)
+
 if(SKBUILD)
   message(STATUS "The project is built using scikit-build")
 endif()
 
 find_package(PythonLibs 3 REQUIRED)
 find_package(PythonInterp ${PYTHONLIBS_VERSION_STRING} REQUIRED)
+set(PYTHON_EXECUTABLE "c:/python/python38/python.exe")
 find_package(SWIG REQUIRED)
 include(${SWIG_USE_FILE})
 set(CMAKE_SWIG_FLAGS -py3)
@@ -33,6 +36,7 @@ SWIG_ADD_LIBRARY( toolkit LANGUAGE python SOURCES wrapper/toolkit.i )
 set_property(SOURCE toolkit.i PROPERTY USE_LIBRARY_INCLUDE_DIRECTORIES TRUE)
 set_property(TARGET epanet2 PROPERTY SWIG_USE_TARGET_INCLUDE_DIRECTORIES TRUE)
 SWIG_LINK_LIBRARIES(toolkit epanet2)
+
 SWIG_LINK_LIBRARIES(toolkit ${PYTHON_LIBRARIES})
 set_property(TARGET _toolkit PROPERTY INSTALL_RPATH "$ORIGIN")
 
@@ -58,9 +62,14 @@ add_custom_command(
 add_custom_command(
         TARGET _toolkit POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy
-                ${CMAKE_CURRENT_BINARY_DIR}/lib/libepanet2.*
-                ${CMAKE_CURRENT_BINARY_DIR}/../../../packages/epanet/)
+                ${CMAKE_CURRENT_BINARY_DIR}/lib/Release/_toolkit.pyd
+                ${CMAKE_CURRENT_BINARY_DIR}/../../../packages/epanet/_toolkit.pyd)
 
+add_custom_command(
+        TARGET _toolkit POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+                ${CMAKE_CURRENT_BINARY_DIR}/lib/Release/epanet2.lib
+                ${CMAKE_CURRENT_BINARY_DIR}/../../../packages/epanet/epanet2.lib)
 
 #add_custom_command(
 #        TARGET _toolkit POST_BUILD
