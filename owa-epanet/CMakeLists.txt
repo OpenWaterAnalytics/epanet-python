@@ -8,7 +8,14 @@ endif()
 
 find_package(PythonLibs 3 REQUIRED)
 find_package(PythonInterp ${PYTHONLIBS_VERSION_STRING} REQUIRED)
-set(PYTHON_EXECUTABLE "c:/python/python38/python.exe")
+# If find_package() has difficulty finding the appropriate python 
+# directories and libraries (especially in Windows with multiple 
+# versions of python) set them manually as in the next three lines 
+# below (and comment out the above two find_package() lines):
+# set(PYTHON_EXECUTABLE "c:/python/python38/python.exe")
+# set(PYTHON_INCLUDE_PATH "c:/python/python38/include")
+# set(PYTHON_LIBRARIES "c:/python/python38/libs/python38.lib")
+
 find_package(SWIG REQUIRED)
 include(${SWIG_USE_FILE})
 set(CMAKE_SWIG_FLAGS -py3)
@@ -59,17 +66,26 @@ add_custom_command(
                 ${CMAKE_CURRENT_BINARY_DIR}/toolkit.py
                 ${CMAKE_CURRENT_BINARY_DIR}/../../../packages/epanet/toolkit.py)
 
-add_custom_command(
-        TARGET _toolkit POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy
-                ${CMAKE_CURRENT_BINARY_DIR}/lib/Release/_toolkit.pyd
-                ${CMAKE_CURRENT_BINARY_DIR}/../../../packages/epanet/_toolkit.pyd)
+IF(WIN32)
+    add_custom_command(
+            TARGET _toolkit POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy
+                    ${CMAKE_CURRENT_BINARY_DIR}/lib/Release/_toolkit.pyd
+                    ${CMAKE_CURRENT_BINARY_DIR}/../../../packages/epanet/_toolkit.pyd)
+    add_custom_command(
+            TARGET _toolkit POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy
+                    ${CMAKE_CURRENT_BINARY_DIR}/lib/Release/epanet2.lib
+                    ${CMAKE_CURRENT_BINARY_DIR}/../../../packages/epanet/epanet2.lib)
+ELSE(True)
+    add_custom_command(
+            TARGET _toolkit POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy
+                    ${CMAKE_CURRENT_BINARY_DIR}/lib/libepanet2.*
+                    ${CMAKE_CURRENT_BINARY_DIR}/../../../packages/epanet/)
+ENDIF(WIN32)
 
-add_custom_command(
-        TARGET _toolkit POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy
-                ${CMAKE_CURRENT_BINARY_DIR}/lib/Release/epanet2.lib
-                ${CMAKE_CURRENT_BINARY_DIR}/../../../packages/epanet/epanet2.lib)
+
 
 #add_custom_command(
 #        TARGET _toolkit POST_BUILD
