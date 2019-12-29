@@ -1,5 +1,7 @@
 cls
 
+git clone --branch=dev https://github.com/OpenWaterAnalytics/EPANET.git
+
 SET CMAKE_PATH=cmake.exe 
 SET Build_PATH=%CD%
 SET COMPILE_PATH=%Build_PATH%\build\
