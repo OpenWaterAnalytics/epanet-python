@@ -98,6 +98,38 @@ def ENgetnodeid(index):
     if ierr!=0: raise ENtoolkitError(ierr)
     return label.value
 
+def ENsettitle(line1,line2,line3):
+	"""Set inp file title
+	
+	Arguments:
+	line1: line 1 of 3 inp title lines
+	line2: line 2 of 3 inp title lines
+	line3: line 3 of 3 inp title lines"""
+	ierr = _lib.ENsettitle(ctypes.c_char_p(line1.encode()),
+			       ctypes.c_char_p(line2.encode()),
+			       ctypes.c_char_p(line3.encode()))
+	if ierr!=0: raise ENtoolkitError(ierr)
+
+
+def ENsetflowunits(units_code):
+	"""Set flow units
+	
+	Arguments:
+	units_code:	int code for unit type: 
+		EN_CFS	0	cubic feet per second
+		EN_GPM	1	gallons per minute
+		EN_MGD	2	million gallons per day
+		EN_IMGD	3	Imperial mgd
+		EN_AFD	4	acre-feet per day
+		EN_LPS	5	liters per second
+		EN_LPM	6	liters per minute
+		EN_MLD	7	million liters per day
+		EN_CMH	8	cubic meters per hour
+		EN_CMD	9	cubic meters per day
+	"""
+    	ierr = _lib.ENsetflowunits(ctypes.c_int(units_code))
+    	if ierr != 0: raise ENtoolkitError(ierr)
+
 
 def ENgetnodetype(index):
     """Retrieves the node-type code for a specific node.
