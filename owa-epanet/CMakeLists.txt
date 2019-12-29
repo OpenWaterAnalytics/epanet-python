@@ -75,8 +75,8 @@ IF(WIN32)
     add_custom_command(
             TARGET _toolkit POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy
-                    ${CMAKE_CURRENT_BINARY_DIR}/lib/Release/epanet2.lib
-                    ${CMAKE_CURRENT_BINARY_DIR}/../../../packages/epanet/epanet2.lib)
+                    ${CMAKE_CURRENT_BINARY_DIR}/bin/Release/epanet2.dll
+                    ${CMAKE_CURRENT_BINARY_DIR}/../../../packages/epanet/epanet2.dll)
 ELSE(True)
     add_custom_command(
             TARGET _toolkit POST_BUILD
