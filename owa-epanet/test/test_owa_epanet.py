@@ -324,4 +324,19 @@ def test_setnodevalue():
     assert tank_level_list ==[121.0]
     clean_dir()
 
+def test_setcurve():
+    def make_array(values):
+        dbl_arr = en.doubleArray(len(values))
+        for i in range(len(values)):
+            dbl_arr[i] = values[i]
+        return dbl_arr
 
+    epanet_proj = en.createproject()
+    en.open(ph=epanet_proj, inpFile=example_1_path, rptFile='report.rpt', outFile='output.out')
+    ok = en.addcurve(ph=epanet_proj, id="my_curve")
+    curve_index = en.getcurveindex(ph=epanet_proj, id="my_curve")
+    xvalues = make_array([1,2,3,4,5])
+    yvalues = make_array([1,2,3,4,5])
+    en.setcurve(ph=epanet_proj, index=curve_index, xValues=xvalues, yValues=yvalues, nPoints=5)
+    count = en.getcurvelen(ph=epanet_proj, index=curve_index)
+    assert count == 5

@@ -1,5 +1,10 @@
 %include "typemaps.i"
 %include "cstring.i"
+%include "carrays.i"
+
+/* arrays for toolkit functions wanting lists */
+%array_class(int, intArray);
+%array_class(double, doubleArray);
 
 /* epanet simple python wrapper */
 %module (package="epanet") toolkit
