@@ -63,15 +63,22 @@
 
 %apply double *OUTPUT {
     double *value,
-    double *x,
-    double *y,
     double *baseDemand,
     double *pmin,
     double *preq,
     double *pexp,
     double *setting,
     double *level,
-    double *priority
+    double *priority,
+    double *out_x,
+    double *out_y
+};
+
+%apply double *INPUT {
+    double *x,
+    double *y,
+    double *xValues,
+    double *yValues
 };
 
 %apply long *OUTPUT {
