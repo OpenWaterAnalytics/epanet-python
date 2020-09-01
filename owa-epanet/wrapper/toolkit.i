@@ -74,13 +74,6 @@
     double *out_y
 };
 
-// %apply double *INPUT {
-//     double *x,
-//     double *y,
-//     double *xValues,
-//     double *yValues
-// };
-
 %apply long *OUTPUT {
     long *out_value,
     long *out_currentTime,
