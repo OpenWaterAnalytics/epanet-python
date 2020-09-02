@@ -340,3 +340,12 @@ def test_setcurve():
     en.setcurve(ph=epanet_proj, index=curve_index, xValues=xvalues, yValues=yvalues, nPoints=5)
     count = en.getcurvelen(ph=epanet_proj, index=curve_index)
     assert count == 5
+
+def test_coords():
+    epanet_proj = en.createproject()
+    en.open(ph=epanet_proj, inpFile=example_1_path, rptFile='report.rpt', outFile='output.out')
+    coords = en.getcoord(epanet_proj,1)
+    en.setcoord(epanet_proj,1,3,4)
+    coords = en.getcoord(epanet_proj,1)
+    assert coords[0] == pytest.approx(3)
+    assert coords[1] == pytest.approx(4)
