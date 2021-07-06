@@ -1,0 +1,41 @@
+name: Build Wheels
+
+on: [push, pull_request]
+
+
+build_toolkit_win-mac:
+    name: Build MacOS python 3.8
+    runs-on: macos-10.15
+    defaults:
+      run:
+        working-directory: ./owa-epanet
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      - name: Install Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+
+      - name: Install required system packages
+        run: brew install swig
+
+      - name: Build wheel
+        run: |
+          pip install scikit-build
+          python setup.py bdist_wheel
+
+      - name: Test wheel
+        run: |
+          pip install pytest
+          pip install --no-index --find-links=./dist owa-epanet
+          pytest
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          path: owa-epanet/dist/*.whl
