@@ -15,12 +15,17 @@ wq_times = [86100, 85800, 85500, 85200, 84900, 84600, 84300, 84000, 83700, 83400
 
 
 def clean_dir():
+    def safe_delete(filename):
+        try:
+            os.remove(filename)
+        except PermissionError:
+            pass
     if os.path.exists('report.rpt'):
-        os.remove('report.rpt')
+        safe_delete('report.rpt')
     if os.path.exists('output.out'):
-        os.remove('output.out')
+        safe_delete('output.out')
     if os.path.exists('saved_inp_file.inp'):
-        os.remove('saved_inp_file.inp')
+        safe_delete('saved_inp_file.inp')
 
 
 def test_create_project():
@@ -236,8 +241,9 @@ def test_water_age_sim():
     en.closeQ(ph=epanet_proj)
     en.closeH(ph=epanet_proj)
     en.close(ph=epanet_proj)
-    assert age_list[26] == [1.0, 2.2141675704376946, 12.939125434025273, 24.44152992466322, 13.174235412569542,
-                            24.441519659540887, 15.679376648181817, 21.97064181429266, 19.048343501261524, 1.0]
+    assert age_list[26] == pytest.approx(
+        [1.0, 2.2141675704376946, 12.939125434025273, 24.44152992466322, 13.174235412569542,
+         24.441519659540887, 15.679376648181817, 21.97064181429266, 19.048343501261524, 1.0])
     clean_dir()
 
 
@@ -324,6 +330,7 @@ def test_setnodevalue():
     assert tank_level_list ==[121.0]
     clean_dir()
 
+
 def test_setcurve():
     def make_array(values):
         dbl_arr = en.doubleArray(len(values))
@@ -340,6 +347,7 @@ def test_setcurve():
     en.setcurve(ph=epanet_proj, index=curve_index, xValues=xvalues, yValues=yvalues, nPoints=5)
     count = en.getcurvelen(ph=epanet_proj, index=curve_index)
     assert count == 5
+
 
 def test_coords():
     epanet_proj = en.createproject()
