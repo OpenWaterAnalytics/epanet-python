@@ -77,11 +77,9 @@ jobs:
         with:
           submodules: true
 
-      #     Had issues with not all files being pulled and this somehow resolved it
       - name: Fix submodules
         run: |
           cd owa-epanet
-          rm -rf EPANET
           git submodule update
 
       - uses: actions/setup-python@v2
