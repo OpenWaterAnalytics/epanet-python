@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.8)
 
 project(owa-epanet)
+set(Python3_EXECUTABLE ${PYTHON_EXECUTABLE})
 
 if(SKBUILD)
   message(STATUS "The project is built using scikit-build")
