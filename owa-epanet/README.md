@@ -4,6 +4,14 @@ A slender, auto-generated python wrapper around the owa:epanet hydraulic network
 
 Where possible, SWIG has been configured to throw warnings/exceptions instead of using the customary EPANET return integer value for success-checking. Also any output (pointer) parameters from the C API have been re-routed to return values. In these cases, the return tuple from the Python API will contain the values desired.
 
+## Installation
+To install with pip:
+```shell
+pip install owa-epanet
+```
+
+Wheels are now provided for most installations, some extra work will be needed if installing from source.
+
 
 ## Building the libraries
 
@@ -27,3 +35,6 @@ This python library was packaged in the following way:
 python3 setup.py sdist bdist_wheel
 python3 -m twine upload dist/*
 ```
+
+## Versioning
+This package loosely follows EPANET's release version numbers. Its major and minor numbers will correspond to the given EPANET version, but the patch number is independent. This system might change in the future.
