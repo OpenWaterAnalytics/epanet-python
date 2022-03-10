@@ -6,7 +6,7 @@ on:
 jobs:
   build_wheels:
     name: Build wheel for cp${{ matrix.python }}-${{ matrix.platform_id }}
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
@@ -47,7 +47,7 @@ jobs:
         if: startsWith(matrix.os, 'windows')
 
       - name: Install cibuildwheel
-        run: python -m pip install cibuildwheel==2.2.0a1
+        run: python -m pip install cibuildwheel==2.3.1
 
       - name: Build wheels
         run: python -m cibuildwheel --output-dir wheelhouse owa-epanet
@@ -61,6 +61,7 @@ jobs:
           CIBW_TEST_COMMAND: pytest {package}
           CIBW_BEFORE_TEST: pip install scikit-build==0.11.1 cmake==3.18.4
           CIBW_TEST_REQUIRES: pytest
+          CIBW_TEST_SKIP: "*-win32 *-manylinux_i686"
 
       - name: Store artifacts
         uses: actions/upload-artifact@v2
@@ -76,11 +77,9 @@ jobs:
         with:
           submodules: true
 
-      #     Had issues with not all files being pulled and this somehow resolved it
       - name: Fix submodules
         run: |
           cd owa-epanet
-          rm -rf EPANET
           git submodule update
 
       - uses: actions/setup-python@v2
@@ -111,10 +110,9 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: artifact
-          path: owa-epanet/dist
+          path: dist
 
       - uses: pypa/gh-action-pypi-publish@v1.4.2
         with:
           user: __token__
           password: ${{ secrets.PYPI_API_TOKEN }}
-          repository_url: https://test.pypi.org/legacy/

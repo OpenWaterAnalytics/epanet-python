@@ -15,12 +15,17 @@ wq_times = [86100, 85800, 85500, 85200, 84900, 84600, 84300, 84000, 83700, 83400
 
 
 def clean_dir():
+    def safe_delete(filename):
+        try:
+            os.remove(filename)
+        except PermissionError:
+            pass
     if os.path.exists('report.rpt'):
-        os.remove('report.rpt')
+        safe_delete('report.rpt')
     if os.path.exists('output.out'):
-        os.remove('output.out')
+        safe_delete('output.out')
     if os.path.exists('saved_inp_file.inp'):
-        os.remove('saved_inp_file.inp')
+        safe_delete('saved_inp_file.inp')
 
 
 def test_create_project():
