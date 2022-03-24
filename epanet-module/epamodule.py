@@ -2,10 +2,14 @@
 
 added function ENsimtime"""
 
-
+import sys
+import os
 import ctypes
 import platform
 import datetime
+
+this_dir = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(this_dir)
 
 _plat= platform.system()
 if _plat=='Linux':
@@ -13,7 +17,7 @@ if _plat=='Linux':
 elif _plat=='Windows':
   try:
     # if epanet2.dll compiled with __cdecl (as in OpenWaterAnalytics)
-    _lib = ctypes.CDLL("epamodule\epanet2.dll")
+    _lib = ctypes.CDLL(os.path.join(this_dir, "epamodule", "epanet2.dll"))
     _lib.ENgetversion(ctypes.byref(ctypes.c_int()))
   except ValueError:
      # if epanet2.dll compiled with __stdcall (as in EPA original DLL)
@@ -22,7 +26,8 @@ elif _plat=='Windows':
        _lib.ENgetversion(ctypes.byref(ctypes.c_int()))
      except ValueError:
        raise Exception("epanet2.dll not suitable")
-
+elif _plat=='Darwin':
+    _lib = ctypes.CDLL(os.path.join(this_dir, "epamodule", "libepanet2.dylib"))
 else:
   Exception('Platform '+ _plat +' unsupported (not yet)')
 
