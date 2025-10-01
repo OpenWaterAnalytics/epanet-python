@@ -1,10 +1,11 @@
 %include "typemaps.i"
 %include "cstring.i"
+%include "carrays.i"
 
 /* epanet simple python wrapper */
 %module (package="epanet") output
 %{
-#define SHARED_EXPORTS_BUILT_AS_STATIC
+#define EXPORT_OUT_API
 #include <epanet_output.h>
 %}
 %include <epanet_output_enums.h>
@@ -91,6 +92,7 @@
 
 %feature("autodoc", "2");
 #define SHARED_EXPORTS_BUILT_AS_STATIC
+#define EXPORT_OUT_API
 %include <epanet_output.h>
 
 %exception;

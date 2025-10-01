@@ -22,6 +22,39 @@
 %typemap(argout) EN_Project* {
   %append_output(SWIG_NewPointerObj(*$1, SWIGTYPE_p_Project, SWIG_POINTER_NEW));
 }
+/*
+This is the same logic applied in swmm toolkit to handle a breaking change
+introduced in the version 4.3 of SWIG. Credit: karosc
+
+See https://github.com/karosc/swmm-python/commit/1ef854ac469c1e2df29f9bb1ed718361df79cc95
+*/
+%header %{
+SWIGINTERN PyObject*
+Custom_SWIG_Python_AppendOutput(PyObject* result, PyObject* obj, int is_void) {
+    if (!result) {
+    result = obj;
+    } else if (result == Py_None) {
+    SWIG_Py_DECREF(result);
+    result = obj;
+    } else {
+    if (!PyList_Check(result)) {
+        PyObject *o2 = result;
+        result = PyList_New(1);
+        if (result) {
+        PyList_SET_ITEM(result, 0, o2);
+        } else {
+        SWIG_Py_DECREF(obj);
+        return o2;
+        }
+    }
+    PyList_Append(result,obj);
+    SWIG_Py_DECREF(obj);
+    }
+    return result;
+}
+#define SWIG_Python_AppendOutput Custom_SWIG_Python_AppendOutput
+%}
+
 
 /* TYPEMAP FOR IGNORING INT ERROR CODE RETURN VALUE */
 %typemap(out) int {
